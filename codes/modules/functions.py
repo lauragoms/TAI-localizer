@@ -11,7 +11,8 @@ import scipy.sparse as sp
 from scipy.linalg import qr
 import mumps
 ctx = mumps.Context() # Provided by python-mumps package
-
+from . import model_BHZ_2D as bhz
+from . import model_TI_3D as m3d
 
 
 def update_progress(progress, decimalpoints=0):
@@ -102,8 +103,7 @@ def eigsh(
     return evals, evecs
 
 
-params=dict(E0=0.1,
-            kappa=0.16,
+params=dict(kappa=0.1,
             W=0,
             num_reals=50,
             maxiter=2000,
@@ -137,17 +137,24 @@ def pos_H(fsyst, coord=0):
         ind += ton[i]
 
     return x
+
 def get_center(fsyst_sites):
     sites = {}
-    sites['x'],sites['y'],sites['z'] = [],[],[]
+    d = len(fsyst_sites[0].pos)
 
-    for site in fsyst_sites:
-        x,y,z = site.pos
-        sites['x'].append(x)
-        sites['y'].append(y)
-        sites['z'].append(z)
+    for i in range(d):
+        sites[i] = []
     
-    return (np.max(np.array(sites['x'])) + np.min(np.array(sites['x'])))/2,(np.max(np.array(sites['y'])) + np.min(np.array(sites['y'])))/2,(np.max(np.array(sites['z'])) + np.min(np.array(sites['z'])))/2
+    for site in fsyst_sites:
+        site = site.pos
+        for coord in range(d):
+            sites[coord].append(site[coord])
+    if d==1:
+        return (np.max(np.array(sites[0])) + np.min(np.array(sites[0])))/2
+    if d==2:
+        return (np.max(np.array(sites[0])) + np.min(np.array(sites[0])))/2,(np.max(np.array(sites[1])) + np.min(np.array(sites[1])))/2
+    if d==3:
+        return (np.max(np.array(sites[0])) + np.min(np.array(sites[0])))/2,(np.max(np.array(sites[1])) + np.min(np.array(sites[1])))/2,(np.max(np.array(sites[2])) + np.min(np.array(sites[2])))/2
 
 def spectral_localizer_AII2D(syst, W, E0, TR,
                             X0=np.array(['None']),num_reals=50,p=params,
@@ -165,7 +172,6 @@ def spectral_localizer_AII2D(syst, W, E0, TR,
     kappa = p['kappa']
 
 
-    print('E0:',E0,'x0,y0:',x0,y0,'kappa:',kappa,'W:',W)
 
     fsyst = syst.finalized()
     Ls = len(fsyst.sites)
@@ -182,6 +188,7 @@ def spectral_localizer_AII2D(syst, W, E0, TR,
     X = pos_H(fsyst,coord=0)
     Y = pos_H(fsyst,coord=1)
     id = np.identity(np.shape(ham)[0])
+    print('E0:',E0,'x0,y0:',x0,y0,'kappa:',kappa,'W:',W)
 
     D = (X-(x0+0.2)*id)+1j*(Y-(y0+0.2)*id)
     
@@ -241,7 +248,7 @@ def spectral_localizer_AII2D(syst, W, E0, TR,
             start_time2 = time.perf_counter()
             bounds=(-1, 1)
             es = np.linspace(*bounds, 200)   
-            L_sparse = np.block([[h,kappa*np.conjugate(D)],
+            L_sparse = sp.block([[h,kappa*np.conjugate(D)],
                 [kappa*D,-h]])
             spectrum = kwant.kpm.SpectralDensity(hamiltonian=L_sparse)
             spectrum.add_moments(energy_resolution=0.01)
@@ -481,3 +488,45 @@ def sparse_spectral_localizer_AII3D(ham, fsyst_sites, W, E0,
         print('Local gap:',np.abs(localgap_average[0]))
         return invariant_average,localgap_average,list_invariant_realizations,list_localgap_realizations
 
+
+# """Conductance"""
+
+# def average_conductance_W(E,Wr,Lx=4,Ly=4,Lz=6,num_reals=50,p_new=mcryst.params):
+
+
+#     G_W = []
+#     G_W_reals = []
+
+
+#     for W in Wr:
+        
+#         G_reals = []
+#         seed_range = np.arange(num_reals)
+
+#         if W==0:
+#             seed_range = [0]
+#             num_reals = 1
+
+#         print("Averaging over realizations...")
+
+#         for ind,val in enumerate(seed_range):
+#             update_progress((ind+1)/len(seed_range))
+#             p_new['W'] = W
+#             p_new['seed_W'] = val
+#             # syst = mcryst.hexagonal_syst_with_leads(p=p).finalized()
+#             syst,_,_ = mcryst.build_bismuth_with_a3p_leads(Lx,Ly,Lz,p_new)
+#             G = conductance_E(E,syst)
+#             G_reals.append(G)
+
+#         if W==0:
+#             G_avg = G
+#         else:
+#             G_avg = np.mean(np.array(G_reals),axis=0)   
+    
+#         G_W.append(G_avg)
+#         G_W_reals.append(G_reals)
+    
+#         print('W:',W,'G:',G_avg)
+
+
+#     return G_W,G_W_reals
