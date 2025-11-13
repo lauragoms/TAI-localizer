@@ -489,44 +489,47 @@ def sparse_spectral_localizer_AII3D(ham, fsyst_sites, W, E0,
         return invariant_average,localgap_average,list_invariant_realizations,list_localgap_realizations
 
 
-# """Conductance"""
+"""Conductance"""
+def conductance_E(E,syst):
+    S = kwant.smatrix(syst, energy=E)
+    G = S.transmission(1, 0)
+    return G
 
-# def average_conductance_W(E,Wr,Lx=4,Ly=4,Lz=6,num_reals=50,p_new=mcryst.params):
+def average_conductance_W(E,Wr,Lx=4,Ly=4,num_reals=50,params=bhz.params):
+
+    G_W = []
+    G_W_reals = []
 
 
-#     G_W = []
-#     G_W_reals = []
-
-
-#     for W in Wr:
+    for W in Wr:
         
-#         G_reals = []
-#         seed_range = np.arange(num_reals)
+        G_reals = []
+        seed_range = np.arange(num_reals)
 
-#         if W==0:
-#             seed_range = [0]
-#             num_reals = 1
+        if W==0:
+            seed_range = [0]
+            num_reals = 1
 
-#         print("Averaging over realizations...")
+        print("Averaging over realizations...")
 
-#         for ind,val in enumerate(seed_range):
-#             update_progress((ind+1)/len(seed_range))
-#             p_new['W'] = W
-#             p_new['seed_W'] = val
-#             # syst = mcryst.hexagonal_syst_with_leads(p=p).finalized()
-#             syst,_,_ = mcryst.build_bismuth_with_a3p_leads(Lx,Ly,Lz,p_new)
-#             G = conductance_E(E,syst)
-#             G_reals.append(G)
+        for ind,val in enumerate(seed_range):
+            update_progress((ind+1)/len(seed_range))
+            params['W'] = W
+            params['seed_W'] = val
+            # syst = mcryst.hexagonal_syst_with_leads(p=p).finalized()
+            syst,_,_ = bhz.BHZ_with_leads(Lx,Ly,params=params)
+            G = conductance_E(E,syst)
+            G_reals.append(G)
 
-#         if W==0:
-#             G_avg = G
-#         else:
-#             G_avg = np.mean(np.array(G_reals),axis=0)   
+        if W==0:
+            G_avg = G
+        else:
+            G_avg = np.mean(np.array(G_reals),axis=0)   
     
-#         G_W.append(G_avg)
-#         G_W_reals.append(G_reals)
+        G_W.append(G_avg)
+        G_W_reals.append(G_reals)
     
-#         print('W:',W,'G:',G_avg)
+        print('W:',W,'G:',G_avg)
 
 
-#     return G_W,G_W_reals
+    return G_W,G_W_reals
