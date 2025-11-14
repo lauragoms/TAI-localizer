@@ -10,7 +10,8 @@ params = dict(norbs = 4,
                 mu = 0,
                 mu_leads = 0,
                 W = 0,
-                seed_W = 0)
+                seed_W = 0,
+                hadamard = False)
 
 
 sigma_0 = np.eye(2)
@@ -40,7 +41,9 @@ def system_2D_BHZ(Lx,Ly,params=params):
     """
 
     lat = kwant.lattice.square(norbs = params['norbs'])
-
+    hadamard = params['hadamard']
+    if hadamard:
+        print('Hadamard Rotation')
 
     def onsite(site):
         W = params['W']
@@ -48,7 +51,10 @@ def system_2D_BHZ(Lx,Ly,params=params):
         return (params['Delta'] - 4*params['B'])* np.kron(sigma_z,sigma_0) + disorder * np.eye(params['norbs']) + params['mu']*np.kron(sigma_0,sigma_0) # peru's code is -1 because of ws, wp = -1
 
     def hop_x(site0, site1):
-        return (params['B']*np.kron(sigma_z,sigma_0) + params['A']/(2j) * np.kron(sigma_x,sigma_z))
+        if hadamard:
+            return (params['B']*np.kron(sigma_z,sigma_0) + params['A']/(2j) * np.kron(sigma_x,sigma_x))
+        else:
+            return (params['B']*np.kron(sigma_z,sigma_0) + params['A']/(2j) * np.kron(sigma_x,sigma_z))
 
     def	hop_y(site0, site1):
         return (params['B']*np.kron(sigma_z,sigma_0) - params['A']/(2j) * np.kron(sigma_y,sigma_0))
@@ -70,12 +76,16 @@ def system_2D_BHZ(Lx,Ly,params=params):
 
 def lead_BHZ(Ly,lat,params=params):
 
+    hadamard = params['hadamard']
 
     def onsite(site):
         return (params['Delta'] - 4*params['B'])* np.kron(sigma_z,sigma_0) + params['mu_leads']*np.kron(sigma_0,sigma_0) # peru's code is -1 because of ws, wp = -1
    
     def hop_x(site0, site1):
-        return (params['B']*np.kron(sigma_z,sigma_0) + params['A']/(2j) * np.kron(sigma_x,sigma_z))
+        if hadamard:
+            return (params['B']*np.kron(sigma_z,sigma_0) + params['A']/(2j) * np.kron(sigma_x,sigma_x))
+        else:
+            return (params['B']*np.kron(sigma_z,sigma_0) + params['A']/(2j) * np.kron(sigma_x,sigma_z))
 
     def	hop_y(site0, site1):
         return (params['B']*np.kron(sigma_z,sigma_0) - params['A']/(2j) * np.kron(sigma_y,sigma_0))
