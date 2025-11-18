@@ -9,9 +9,10 @@ params = dict(norbs = 4,
                 A = 1,
                 mu = 0,
                 mu_leads = 0,
-                W = 0,
-                seed_W = 0,
-                hadamard = False)
+                dis_onsite = 0,
+                seed_onsite = 0,
+                dis_hadamard = 0,
+                seed_hadamard=0)
 
 
 sigma_0 = np.eye(2)
@@ -26,7 +27,7 @@ sigma_z = np.array(
      [0, -1]])
 
 
-def system_2D_BHZ(Lx,Ly,params=params):
+def system_2D_BHZ(Lx,Ly,p=params):
     """
     Returns a 2D BHZ model system with given parameters.
 
@@ -40,33 +41,38 @@ def system_2D_BHZ(Lx,Ly,params=params):
     sys : kwant.builder.Builder
     """
 
-    lat = kwant.lattice.square(norbs = params['norbs'])
-    hadamard = params['hadamard']
-    if hadamard:
-        print('Hadamard Rotation')
+    p = p.copy()
+    lat = kwant.lattice.square(norbs = p['norbs'])
+
+
+    if p['dis_onsite']!=0:
+        print('Onsite disorder with strength',p['dis_onsite'], 'and seed',p['seed_onsite'])
+
+    if p['dis_hadamard']!=0:
+        hadamard = p['dis_hadamard']
+        print('Spin disorder with probability',hadamard,'and seed',p['seed_hadamard'])
+
+    rng_W = np.random.default_rng(int(p['seed_onsite']))
+    rng_hdmd = np.random.default_rng(int(p['seed_hadamard']))
 
     def onsite(site):
-        W = params['W']
-        disorder = np.random.uniform(-W/2, W/2)
-        return (params['Delta'] - 4*params['B'])* np.kron(sigma_z,sigma_0) + disorder * np.eye(params['norbs']) + params['mu']*np.kron(sigma_0,sigma_0) # peru's code is -1 because of ws, wp = -1
+        W = p['dis_onsite']
+        disorder = rng_W.uniform(-W/2, W/2)
+        return (p['Delta'] - 4*p['B'])* np.kron(sigma_z,sigma_0) + disorder * np.eye(p['norbs']) + p['mu']*np.kron(sigma_0,sigma_0) # peru's code is -1 because of ws, wp = -1
 
     def hop_x(site0, site1):
-        if hadamard:
-            return (params['B']*np.kron(sigma_z,sigma_0) + params['A']/(2j) * np.kron(sigma_x,sigma_x))
-        else:
-            return (params['B']*np.kron(sigma_z,sigma_0) + params['A']/(2j) * np.kron(sigma_x,sigma_z))
+        spin = sigma_z
+
+        if hadamard!=0 and rng_hdmd.choice([0, 1], p=[1 - hadamard/100, hadamard/100])==1:
+            spin = sigma_x
+
+        return (p['B']*np.kron(sigma_z,sigma_0) + p['A']/(2j) * np.kron(sigma_x,spin))
 
     def	hop_y(site0, site1):
-        return (params['B']*np.kron(sigma_z,sigma_0) - params['A']/(2j) * np.kron(sigma_y,sigma_0))
-
-                                     
+        return (p['B']*np.kron(sigma_z,sigma_0) - p['A']/(2j) * np.kron(sigma_y,sigma_0))
+                       
     sys = kwant.Builder()
 
-    if params['W']!=0:
-                print('Disordered system with strength',params['W'], 'with seed',params['seed_W'])
-
-    np.random.seed(int(params['seed_W']))
-    
     sys[(lat(x, y) for x in range(-Lx,Lx) for y in range(-Ly,Ly))] = onsite        
     sys[kwant.builder.HoppingKind((1, 0), lat, lat)] = hop_x
     sys[kwant.builder.HoppingKind((0, 1), lat, lat)] = hop_y
@@ -74,21 +80,21 @@ def system_2D_BHZ(Lx,Ly,params=params):
     return sys,lat
 
 
-def lead_BHZ(Ly,lat,params=params):
+def lead_BHZ(Ly,lat,p=params):
 
-    hadamard = params['hadamard']
+    hadamard = p['hadamard']
 
     def onsite(site):
-        return (params['Delta'] - 4*params['B'])* np.kron(sigma_z,sigma_0) + params['mu_leads']*np.kron(sigma_0,sigma_0) # peru's code is -1 because of ws, wp = -1
+        return (p['Delta'] - 4*p['B'])* np.kron(sigma_z,sigma_0) + p['mu_leads']*np.kron(sigma_0,sigma_0) # peru's code is -1 because of ws, wp = -1
    
     def hop_x(site0, site1):
         if hadamard:
-            return (params['B']*np.kron(sigma_z,sigma_0) + params['A']/(2j) * np.kron(sigma_x,sigma_x))
+            return (p['B']*np.kron(sigma_z,sigma_0) + p['A']/(2j) * np.kron(sigma_x,sigma_x))
         else:
-            return (params['B']*np.kron(sigma_z,sigma_0) + params['A']/(2j) * np.kron(sigma_x,sigma_z))
+            return (p['B']*np.kron(sigma_z,sigma_0) + p['A']/(2j) * np.kron(sigma_x,sigma_z))
 
     def	hop_y(site0, site1):
-        return (params['B']*np.kron(sigma_z,sigma_0) - params['A']/(2j) * np.kron(sigma_y,sigma_0))
+        return (p['B']*np.kron(sigma_z,sigma_0) - p['A']/(2j) * np.kron(sigma_y,sigma_0))
 
 
     sym = kwant.TranslationalSymmetry(lat.vec((1,0)))
@@ -100,10 +106,10 @@ def lead_BHZ(Ly,lat,params=params):
 
     return lead
 
-def BHZ_with_leads(Lx,Ly,params=params):
+def BHZ_with_leads(Lx,Ly,p=params):
     
-    syst, lat = system_2D_BHZ(Lx, Ly, params=params)
-    lead_plus  = lead_BHZ(Ly, lat, params=params)
+    syst, lat = system_2D_BHZ(Lx, Ly, p=p)
+    lead_plus  = lead_BHZ(Ly, lat, p=p)
 
     lead_minus = lead_plus.reversed()
 
