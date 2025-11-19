@@ -27,7 +27,7 @@ sigma_z = np.array(
      [0, -1]])
 
 
-def system_2D_BHZ(Lx,Ly,p=params):
+def system_2D_BHZ(Lx,Ly,p=params,finalize=False):
     """
     Returns a 2D BHZ model system with given parameters.
 
@@ -44,12 +44,12 @@ def system_2D_BHZ(Lx,Ly,p=params):
     p = p.copy()
     lat = kwant.lattice.square(norbs = p['norbs'])
 
+    hadamard = p['dis_hadamard']
 
     if p['dis_onsite']!=0:
         print('Onsite disorder with strength',p['dis_onsite'], 'and seed',p['seed_onsite'])
 
     if p['dis_hadamard']!=0:
-        hadamard = p['dis_hadamard']
         print('Spin disorder with probability',hadamard,'and seed',p['seed_hadamard'])
 
     rng_W = np.random.default_rng(int(p['seed_onsite']))
@@ -59,10 +59,12 @@ def system_2D_BHZ(Lx,Ly,p=params):
         W = p['dis_onsite']
         disorder = rng_W.uniform(-W/2, W/2)
         return (p['Delta'] - 4*p['B'])* np.kron(sigma_z,sigma_0) + disorder * np.eye(p['norbs']) + p['mu']*np.kron(sigma_0,sigma_0) # peru's code is -1 because of ws, wp = -1
+    
 
     def hop_x(site0, site1):
         spin = sigma_z
-
+        # print(rng_hdmd.choice([0, 1], p=[1 - hadamard/100, hadamard/100])==1)
+        
         if hadamard!=0 and rng_hdmd.choice([0, 1], p=[1 - hadamard/100, hadamard/100])==1:
             spin = sigma_x
 
@@ -76,7 +78,8 @@ def system_2D_BHZ(Lx,Ly,p=params):
     sys[(lat(x, y) for x in range(-Lx,Lx) for y in range(-Ly,Ly))] = onsite        
     sys[kwant.builder.HoppingKind((1, 0), lat, lat)] = hop_x
     sys[kwant.builder.HoppingKind((0, 1), lat, lat)] = hop_y
-
+    if finalize:
+        sys = sys.finalized()
     return sys,lat
 
 
