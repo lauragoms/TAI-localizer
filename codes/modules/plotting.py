@@ -50,3 +50,19 @@ def map_Delta_W_localgap(DeltaR,WR,lg,title='Local gap map '):
     plt.colorbar(cbar,label='Local Gap')
 
     plt.show()
+
+
+def map_Delta_W_localgap(DeltaR,WR,lg,title='Local gap map '):
+    plt.style.use('science')
+
+    plt.figure(figsize=(8,6))
+
+    cbar = plt.pcolormesh(DeltaR,WR,lg,cmap=cm.cividis,shading='gouraud')
+
+
+    plt.title(title,fontsize=20)
+    plt.xlabel(r'$\Delta$',fontsize=20)
+    plt.ylabel('W',fontsize=20)
+    plt.colorbar(cbar,label='Local Gap')
+
+    plt.show()
