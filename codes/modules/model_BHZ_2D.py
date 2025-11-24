@@ -1,6 +1,7 @@
-import sys
 import numpy as np
 import kwant
+
+
 params = dict(norbs = 4,
                 Lx = 5,
                 Ly = 5,
@@ -25,6 +26,8 @@ sigma_y = np.array(
 sigma_z = np.array(
     [[1, 0],
      [0, -1]])
+
+'''Crystalline system'''
 
 
 def system_2D_BHZ(Lx,Ly,p=params,finalize=False):
@@ -123,3 +126,6 @@ def BHZ_with_leads(Lx,Ly,p=params):
 
 def TR_op(len_sites):
     return np.kron(np.kron(np.identity(len_sites),sigma_0),sigma_y)
+
+
+

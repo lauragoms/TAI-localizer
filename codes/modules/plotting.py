@@ -52,17 +52,17 @@ def map_Delta_W_localgap(DeltaR,WR,lg,title='Local gap map '):
     plt.show()
 
 
-def map_Delta_W_localgap(DeltaR,WR,lg,title='Local gap map '):
+def map_Delta_W_z2(DeltaR,WR,lg,title=''):
     plt.style.use('science')
 
     plt.figure(figsize=(8,6))
 
-    cbar = plt.pcolormesh(DeltaR,WR,lg,cmap=cm.cividis,shading='gouraud')
+    cbar = plt.pcolormesh(DeltaR,WR,lg,cmap=cm.magma,shading='gouraud')
 
 
     plt.title(title,fontsize=20)
     plt.xlabel(r'$\Delta$',fontsize=20)
     plt.ylabel('W',fontsize=20)
-    plt.colorbar(cbar,label='Local Gap')
+    plt.colorbar(cbar,label=r'$Z_2$')
 
     plt.show()
