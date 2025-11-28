@@ -15,6 +15,17 @@ from . import model_BHZ_2D as bhz
 from . import model_TI_3D as m3d
 
 
+def _fast_pfaffian(K):
+    if np.iscomplex(K).any():
+        raise Exception("Matrix should be real >:|")
+    skpf10_d = cpf._init("skpf10_d")
+    matrix_f = np.asarray(K, dtype=np.float64, order="F")
+    result_array = (ctypes.c_double * 2)(0.0, 0.0)
+    uplo_bytes = "U".encode()
+    method_bytes = "P".encode()
+    skpf10_d(K.shape[0], matrix_f, result_array, uplo_bytes, method_bytes)
+    return (result_array[0], result_array[1])
+
 def update_progress(progress, decimalpoints=0):
     """ Make an interactive progress bar as described on:
     https://stackoverflow.com/questions/3160699/python-progress-bar
@@ -156,7 +167,7 @@ def get_center(fsyst_sites):
     if d==3:
         return (np.max(np.array(sites[0])) + np.min(np.array(sites[0])))/2,(np.max(np.array(sites[1])) + np.min(np.array(sites[1])))/2,(np.max(np.array(sites[2])) + np.min(np.array(sites[2])))/2
 
-def spectral_localizer_AII2D(syst, W, E0, TR,
+def spectral_localizer_AII2D(syst, W, E0, 
                             X0=np.array(['None']),num_reals=50,p=params,
                             compute_inv=True,compute_localgap=False,compute_DOS=False):
 
@@ -190,7 +201,8 @@ def spectral_localizer_AII2D(syst, W, E0, TR,
     id = np.identity(np.shape(ham)[0])
     print('E0:',E0,'x0,y0:',x0,y0,'kappa:',kappa,'W:',W)
 
-    D = (X-(x0+0.2)*id)+1j*(Y-(y0+0.2)*id)
+    TR = np.kron(np.kron(np.identity(Ls),sigma_0),sigma_y)
+    D = (X-(x0)*id)+1j*(Y-(y0)*id)
     
     Q = (1/np.sqrt(2))*np.block([[id,TR],
                                  [-TR,id]])
@@ -227,7 +239,10 @@ def spectral_localizer_AII2D(syst, W, E0, TR,
                 [kappa*D,-h]])
             Hp = 1j*np.conjugate(Q)@L@Q  #lorings section 5.4 i*conj(Q).H.Q
 
-            pfaff_sign = np.real(pff.pfaffian(Hp,sign_only=True))
+            # pfaff_sign = np.real(pff.pfaffian(Hp,sign_only=True))
+            import pfapack.ctypes as cpf
+            import ctypes
+            pfaff_sign = np.sign(_fast_pfaffian(Hp,sign_only=True))
             pfaffian_realizations = pfaffian_realizations + pfaff_sign
             list_pf_reals.append(pfaff_sign)
             print('Realization Pfaffian:',np.real(pfaff_sign))
