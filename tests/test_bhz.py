@@ -1,5 +1,5 @@
 import numpy as np
-from perulizer.bhz import _tx, _ty, _t_theta
+from tai_localizer.perulizer.bhz import _tx, _ty, _t_theta
 
 def test_hoppings():
     A= 0*1.12

@@ -1,6 +1,5 @@
 import numpy as np
-from scipy import linalg as la
-from misc import sigma_x,sigma_y, sigma_z
+from .misc import sigma_x,sigma_y, sigma_z
 
 
 def _tx(A, B, alpha):

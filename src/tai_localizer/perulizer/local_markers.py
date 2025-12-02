@@ -5,7 +5,9 @@ from jax.numpy import einsum
 import pfapack.ctypes as cpf
 from koala.lattice import Lattice
 
-from tai_localizer.peruliser.misc import sigma_x,sigma_y,sigma_z,bhz_trs_operator
+sigma_x = np.array([[0, 1], [1, 0]])
+sigma_y = np.array([[0, -1j], [1j, 0]])
+sigma_z = np.array([[1, 0], [0, -1]])
 
 def chern_marker(l, P, fix=False):
     positions = l.vertices.positions
@@ -18,12 +20,8 @@ def chern_marker(l, P, fix=False):
     y = np.kron(y, np.ones(n_orbitals))
 
     # make shift matrices
-    shifts_x = np.outer(np.ones(len(x)), x) - np.outer(
-        x, np.ones(len(x))
-    )
-    shifts_y = np.outer(np.ones(len(y)), y) - np.outer(
-        y, np.ones(len(y))
-    )
+    shifts_x = np.outer(np.ones(len(x)), x) - np.outer(x, np.ones(len(x)))
+    shifts_y = np.outer(np.ones(len(y)), y) - np.outer(y, np.ones(len(y)))
 
     if fix:
         shifts_x = (shifts_x + 0.5) % 1 - 0.5
@@ -32,8 +30,8 @@ def chern_marker(l, P, fix=False):
     marker2 = einsum("ij,jk,kl,li -> i", P, P * shifts_x, P * shifts_y, P).imag
 
     # sum over orbitals
-    m_out  = marker2.reshape(l.n_vertices, n_orbitals).sum(axis=1)
-    return m_out * 4 * np.pi * l.n_vertices 
+    m_out = marker2.reshape(l.n_vertices, n_orbitals).sum(axis=1)
+    return m_out * 4 * np.pi * l.n_vertices
 
 
 def _fast_pfaffian(K):
@@ -48,10 +46,12 @@ def _fast_pfaffian(K):
     return (result_array[0], result_array[1])
 
 
-
-
 def z2_spec_loc(
-    lattice: Lattice, hamiltonian: np.ndarray, energy: float, trs_operator: np.ndarray, kappa = 1
+    lattice: Lattice,
+    hamiltonian: np.ndarray,
+    energy: float,
+    trs_operator: np.ndarray,
+    kappa=1,
 ) -> int:
 
     pos = lattice.vertices.positions
@@ -72,8 +72,8 @@ def z2_spec_loc(
     Y = np.kron(np.diag(pos[:, 1] - 0.5), np.eye(n_dof))
 
     naive_localiser = (
-        np.kron(sigma_x, X)*kappa
-        + np.kron(sigma_y, Y)*kappa
+        np.kron(sigma_x, X) * kappa
+        + np.kron(sigma_y, Y) * kappa
         + np.kron(sigma_z, hamiltonian - energy * np.eye(h_size))
     )
 
