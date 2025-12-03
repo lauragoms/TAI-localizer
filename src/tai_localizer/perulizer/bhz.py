@@ -36,7 +36,7 @@ def _onsite(Delta, B, ws, wp):
     return a + b
 
 
-
+# TODO - make this use
 # basis for this is position \otimes orbital \otimes spin
 def bhz_ham(square_lat, A, B, alpha, Delta, ws_vals, wp_vals):
 
