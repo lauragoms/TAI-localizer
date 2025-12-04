@@ -25,6 +25,9 @@ params = dict(
 )
 
 """helper functions"""
+def zero_params(system):
+    return {parameter: 0 for parameter in system.parameters}
+
 
 sigma_0 = np.eye(2)
 sigma_x = np.array([[0, 1], [1, 0]])
@@ -52,7 +55,13 @@ def polar_coords(x0, y0):
     return rho, phi
 
 
-def onsite(site, rng_W, dis_onsite, Delta, B, norbs, mu):
+def onsite(site: kwant.builder.SiteFamily,
+           rng_W: np.random.default_rng,
+           dis_onsite: float,
+           Delta: float,
+           B: float,
+           norbs: int,
+           mu: float):
     W = dis_onsite
     disorder = rng_W.uniform(-W / 2, W / 2)
     return (
@@ -61,14 +70,20 @@ def onsite(site, rng_W, dis_onsite, Delta, B, norbs, mu):
         + mu * np.kron(sigma_0, sigma_0)
     )
 
-
-def amorph_hopping(site0, site1, rng_hdmd, dis_hadamard, A, B):
+# FIXME: what is the order for vec
+def amorph_hopping(site0: kwant.Builder.SiteFamily,
+                   site1: kwant.Builder.SiteFamily,
+                   rng_hdmd: np.random.default_rng,
+                   dis_hadamard: float,
+                   A: float,
+                   B: float):
+    
     vec = np.array()
     spin = sigma_z
     if (
         dis_hadamard != 0
-        and rng_hdmd.choice([0, 1], 
-                            p=[1 - dis_hadamard / 100, 
+        and rng_hdmd.choice([0, 1],
+                            p=[1 - dis_hadamard / 100,
                                 dis_hadamard / 100]) == 1
     ):
 
@@ -113,7 +128,10 @@ class Amorphous(kwant.builder.SiteFamily):
         return str(n)
 
 
-def Displacement_2D(sites, seed, sigma):
+def Displacement_2D(sites: list,
+                    seed: int,
+                    sigma: float):
+    
     """Given a crystalline system, the sites are displaced by a Gaussian
     distribution with standard deviation sigma
 
@@ -147,7 +165,8 @@ def Displacement_2D(sites, seed, sigma):
     return disp_sites
 
 
-def bond_2D(lat, p=params):
+def bond_2D(lat: list,
+            D=params['R']):
     """
     Returns the bonds of the lattice.
 
@@ -155,8 +174,8 @@ def bond_2D(lat, p=params):
     ------------
     lat : list
         List of sites in the lattice
-    p : dict
-        Params.
+    D : float
+        Sites within a distance D will be connected
 
     Returns
     -----------
@@ -167,7 +186,7 @@ def bond_2D(lat, p=params):
     def distance(vec_1, vec_2):
         vec_distance = vec_1 - vec_2
         dist_size = np.sqrt(np.dot(vec_distance, vec_distance))
-        return vec_distance, dist_size  # returns both the vector and its length
+        return vec_distance, dist_size
 
     og_size = len(lat)  # how many sites in OBC
 
@@ -179,7 +198,7 @@ def bond_2D(lat, p=params):
     # can be used to rapidly look up the nearest neighbors of any point.
     # Theta function in the hoppings
     bonds = tree.query_ball_point(
-        x=lat, r=p["R"]
+        x=lat, r=D
     )  # find points in lat that are within distance r of out
     info_bond = list()
     info_bond2 = list()
@@ -205,18 +224,31 @@ def bond_2D(lat, p=params):
                 info_bond2.append((i, new_index))
                 a.append(new_index)
 
-    return info_bond
+    return info_bond2
 
 
-# sites = [(x,y) for x in range(-Lx,Lx) for y in range(-Ly,Ly)]
-# sites = Displacement_2D(sites,sigma=p['dis_amorph'],seed=p['seed_amorph'])
-# bonds = bond_2D(sites,p=p)
+def sites_bonds_generator(Lx: int,
+                          Ly: int,
+                          dis_amorph: float,
+                          seed_amorph: int,
+                          koala=True):
+
+    sites = [(x, y) for x in range(-Lx, Lx) for y in range(-Ly, Ly)]
+
+    if koala is False:
+        sites = Displacement_2D(sites, sigma=dis_amorph, seed=seed_amorph)
+    else:
+        sites = koala
+
+    bonds = bond_2D(sites)
+
+    return sites, bonds
 
 # rng_W = np.random.default_rng(int(seed_onsite))
 # rng_hdmd = np.random.default_rng(int(seed_hadamard))
 
 
-def amorph_BHZ(sites, bonds, seed_onsite, seed_hadamard, p=params):
+def amorph_BHZ(sites, bonds):
     """
     Returns an amorphous 2D BHZ model system with given parameters.
 
@@ -239,8 +271,7 @@ def amorph_BHZ(sites, bonds, seed_onsite, seed_hadamard, p=params):
     for i in range(len(sites)):
         syst[lat(i)] = onsite
 
-    for i, j, vec in bonds:
+    for i, j in bonds:
         syst[lat(i), lat(j)] = amorph_hopping
 
     return syst
-

@@ -1,19 +1,23 @@
+from . import model_BHZ_2D as bhz
+from . import model_TI_3D as m3d
+# from . import pfaffian as pff
+
 import numpy as np
-import time, sys
 import scipy.sparse as sp
-from . import pfaffian as pff
 import kwant
 import numpy as np
 import numpy.linalg as npl
-import time, sys
+import time
+import sys
 import pylab as py
 import scipy.sparse as sp
 from scipy.linalg import qr
 import mumps
 
+import pfapack.ctypes as cpf
+import ctypes
+
 ctx = mumps.Context()  # Provided by python-mumps package
-from . import model_BHZ_2D as bhz
-from . import model_TI_3D as m3d
 
 
 def _fast_pfaffian(K):
@@ -119,7 +123,11 @@ def eigsh(
 
 
 params = dict(
-    kappa=0.1, W=0, num_reals=50, maxiter=2000, sigma=0, tol_locgap=1e-6, N_dimeroff=0
+    kappa=0.1, 
+    W=0, 
+    num_reals=50, 
+    maxiter=2000, 
+    tol_locgap=1e-6, 
 )
 
 """Defining Pauli matrices"""
@@ -181,6 +189,7 @@ def spectral_localizer_AII2D(
     syst,
     W,
     E0,
+    kappa,
     X0=np.array(["None"]),
     num_reals=50,
     p=params,
@@ -196,7 +205,7 @@ def spectral_localizer_AII2D(
     ----------------
     pfaff_sign: Topological invariant as the sign of the pfaffian."""
 
-    kappa = p["kappa"]
+
 
     fsyst = syst.finalized()
     Ls = len(fsyst.sites)
@@ -251,9 +260,7 @@ def spectral_localizer_AII2D(
             Hp = 1j * np.conjugate(Q) @ L @ Q  # lorings section 5.4 i*conj(Q).H.Q
 
             # pfaff_sign = np.real(pff.pfaffian(Hp,sign_only=True))
-            import pfapack.ctypes as cpf
-            import ctypes
-
+    
             pfaff_sign = np.sign(_fast_pfaffian(Hp, sign_only=True))
             pfaffian_realizations = pfaffian_realizations + pfaff_sign
             list_pf_reals.append(pfaff_sign)
@@ -274,7 +281,8 @@ def spectral_localizer_AII2D(
             start_time2 = time.perf_counter()
             bounds = (-1, 1)
             es = np.linspace(*bounds, 200)
-            L_sparse = sp.block([[h, kappa * np.conjugate(D)], [kappa * D, -h]])
+            L_sparse = sp.block([[h, kappa * np.conjugate(D)], 
+                                 [kappa * D, -h]])
             spectrum = kwant.kpm.SpectralDensity(hamiltonian=L_sparse)
             spectrum.add_moments(energy_resolution=0.01)
             energy_subset = es
@@ -364,8 +372,10 @@ def sparse_spectral_localizer_AII3D(
     fsyst_sites,
     W,
     E0,
+    kappa,
     X0=np.array(["None"]),
-    p=params,
+    num_reals=50,
+    maxiter=2000,
     compute_inv=True,
     compute_DOS=False,
     compute_localgap=False,
@@ -379,7 +389,6 @@ def sparse_spectral_localizer_AII3D(
     fsyst_sites : list of sites of the system
     W : Anderson disorder strength
     E0 : energy at which we compute the localizer
-    p : dictionary to modify sigma, N_dimeroff, num_reals, kappa
     X0 : position origin
 
     Returns
@@ -388,31 +397,20 @@ def sparse_spectral_localizer_AII3D(
     compute_DOS = True : energy_subset, density_subset_average
     compute_localgap = True : localgap_average,list_localgap_realizations"""
 
-    p = {**params, **p}
-
-    # if X0[0]=='None':
-    #         X0 = np.array([0,0,((p['h']+1.5)*np.sqrt(3/2))/2]) #one can check (windows.py) this is really the middle of the hexagonal prism.
     if X0[0] == "None":
         X0 = get_center(fsyst_sites)
-
-    sigma = p["sigma"]
-    N_dimeroff = p["N_dimeroff"]
-    kappa = p["kappa"]
-    num_reals = p["num_reals"]
-    maxiter = p["maxiter"]
-
+        
     print(
         "DISORDER. W:",
         W,
-        ", sigma:",
-        sigma,
-        ", N_dimeroff:",
-        N_dimeroff,
         " & num_reals:",
         num_reals,
     )
 
-    print("LOCALIZER. kappa: ", kappa, ", E0: ", E0, ", X0:", X0, ", maxiter:", maxiter)
+    print("LOCALIZER. kappa: ", kappa,
+                        ", E0: ", E0,
+                        ", X0:", X0, 
+                        ", maxiter:", maxiter)
 
     norbs = ham.shape[0] / len(fsyst_sites)
     # Now we define position operators centered in X0 for crystalline:
@@ -437,7 +435,7 @@ def sparse_spectral_localizer_AII3D(
     localgap_realization = 0
     density_subset_realizations = np.zeros(200, dtype=np.complex128)
 
-    if W == 0 and sigma == 0 and N_dimeroff == 0:
+    if W == 0:
         num_reals = 1
 
     seed_range = np.arange(num_reals)
@@ -454,7 +452,10 @@ def sparse_spectral_localizer_AII3D(
         # ANDERSON'S DISORDER
         if W != 0:
             disp = sp.diags(
-                np.random.uniform(low=-W / 2, high=W / 2, size=len(fsyst_sites))
+                np.random.uniform(
+                    low=-W / 2, 
+                    high=W / 2, 
+                    size=len(fsyst_sites))
             )
             AND_disorder = sp.kron(disp, sp.eye(norbs))
 
@@ -481,7 +482,8 @@ def sparse_spectral_localizer_AII3D(
 
         # Compute the local gap with mumps
         if compute_localgap is True:
-            L_sparse = sp.kron(sigma_01, block_1) + sp.kron(sigma_10, block_1.getH())
+            L_sparse = (sp.kron(sigma_01, block_1)
+                        + sp.kron(sigma_10, block_1.getH()))
             start_time2 = time.perf_counter()
             local_gap = eigsh(L_sparse, k=1, sigma=0)
             print("Local gap realization:", local_gap)
@@ -496,7 +498,8 @@ def sparse_spectral_localizer_AII3D(
             start_time2 = time.perf_counter()
             bounds = (-1, 1)
             es = np.linspace(*bounds, 200)
-            L_sparse = sp.kron(sigma_01, block_1) + sp.kron(sigma_10, block_1.getH())
+            L_sparse = (sp.kron(sigma_01, block_1)
+                        + sp.kron(sigma_10, block_1.getH()))
             # L_sparse = block_1
             # print(L_sparse.shape[0])
             spectrum = kwant.kpm.SpectralDensity(hamiltonian=L_sparse)

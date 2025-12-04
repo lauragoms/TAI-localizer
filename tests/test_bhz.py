@@ -18,3 +18,5 @@ def test_hoppings():
     assert np.allclose(ty , ty2)
     assert np.allclose(tx.conj().T , tx2_dag)
     assert np.allclose(ty.conj().T , ty2_dag)
+
+test_hoppings()
