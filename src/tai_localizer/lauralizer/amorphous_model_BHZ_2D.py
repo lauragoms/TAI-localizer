@@ -70,15 +70,15 @@ def onsite(site: kwant.builder.SiteFamily,
         + mu * np.kron(sigma_0, sigma_0)
     )
 
-# FIXME: what is the order for vec
-def amorph_hopping(site0: kwant.Builder.SiteFamily,
-                   site1: kwant.Builder.SiteFamily,
+
+def amorph_hopping(site1: kwant.builder.SiteFamily,
+                   site2: kwant.builder.SiteFamily,
                    rng_hdmd: np.random.default_rng,
                    dis_hadamard: float,
                    A: float,
                    B: float):
-    
-    vec = np.array()
+
+    vec = np.array(site2.pos - site1.pos)
     spin = sigma_z
     if (
         dis_hadamard != 0
@@ -257,7 +257,7 @@ def amorph_BHZ(sites, bonds):
     sites : list
         List of position of the amorphous system.
     p : dict
-        Dictionary containing the model parameters 
+        Dictionary containing the model parameters
         {A,B,Delta,dis_onsite,dis_hadamard}
 
     Returns
