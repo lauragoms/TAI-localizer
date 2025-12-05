@@ -1,5 +1,5 @@
 from . import model_BHZ_2D as bhz
-from . import model_TI_3D as m3d
+# from . import model_TI_3D as m3ds
 # from . import pfaffian as pff
 
 import numpy as np
@@ -186,13 +186,13 @@ def get_center(fsyst_sites):
 
 
 def spectral_localizer_AII2D(
-    syst,
+    fsyst,
+    ham,
     W,
     E0,
     kappa,
     X0=np.array(["None"]),
     num_reals=50,
-    p=params,
     compute_inv=True,
     compute_localgap=False,
     compute_DOS=False,
@@ -207,9 +207,8 @@ def spectral_localizer_AII2D(
 
 
 
-    fsyst = syst.finalized()
     Ls = len(fsyst.sites)
-    ham = fsyst.hamiltonian_submatrix()
+
 
     if X0[0] == "None":
         X0 = get_center(fsyst.sites)

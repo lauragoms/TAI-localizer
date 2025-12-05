@@ -25,6 +25,8 @@ params = dict(
 )
 
 """helper functions"""
+
+
 def zero_params(system):
     return {parameter: 0 for parameter in system.parameters}
 
@@ -55,13 +57,15 @@ def polar_coords(x0, y0):
     return rho, phi
 
 
-def onsite(site: kwant.builder.SiteFamily,
-           rng_W: np.random.default_rng,
-           dis_onsite: float,
-           Delta: float,
-           B: float,
-           norbs: int,
-           mu: float):
+def onsite(
+    site: kwant.builder.SiteFamily,
+    rng_W: np.random.default_rng,
+    dis_onsite: float,
+    Delta: float,
+    B: float,
+    norbs: int,
+    mu: float,
+):
     W = dis_onsite
     disorder = rng_W.uniform(-W / 2, W / 2)
     return (
@@ -71,20 +75,20 @@ def onsite(site: kwant.builder.SiteFamily,
     )
 
 
-def amorph_hopping(site1: kwant.builder.SiteFamily,
-                   site2: kwant.builder.SiteFamily,
-                   rng_hdmd: np.random.default_rng,
-                   dis_hadamard: float,
-                   A: float,
-                   B: float):
+def amorph_hopping(
+    site1: kwant.builder.SiteFamily,
+    site2: kwant.builder.SiteFamily,
+    rng_hdmd: np.random.default_rng,
+    dis_hadamard: float,
+    A: float,
+    B: float,
+):
 
     vec = np.array(site2.pos - site1.pos)
     spin = sigma_z
     if (
         dis_hadamard != 0
-        and rng_hdmd.choice([0, 1],
-                            p=[1 - dis_hadamard / 100,
-                                dis_hadamard / 100]) == 1
+        and rng_hdmd.choice([0, 1], p=[1 - dis_hadamard / 100, dis_hadamard / 100]) == 1
     ):
 
         spin = sigma_x
@@ -106,9 +110,7 @@ class Amorphous(kwant.builder.SiteFamily):
     def __init__(self, coords):
         n = params["name"]
         self.coords = coords
-        super(Amorphous, self).__init__(
-            str(n + n), str(n), params["norbs"]
-        )  
+        super(Amorphous, self).__init__(str(n + n), str(n), params["norbs"])
 
     def normalize_tag(self, tag):
         try:
@@ -128,10 +130,7 @@ class Amorphous(kwant.builder.SiteFamily):
         return str(n)
 
 
-def Displacement_2D(sites: list,
-                    seed: int,
-                    sigma: float):
-    
+def Displacement_2D(sites: list, seed: int, sigma: float):
     """Given a crystalline system, the sites are displaced by a Gaussian
     distribution with standard deviation sigma
 
@@ -157,7 +156,7 @@ def Displacement_2D(sites: list,
 
         x, y = sites[i][0], sites[i][1]
 
-        disp_x, disp_y = disp[2*i:2*i+2]
+        disp_x, disp_y = disp[2 * i : 2 * i + 2]
         x = x + disp_x
         y = y + disp_y
         disp_sites.append(np.array([x, y]))
@@ -165,8 +164,7 @@ def Displacement_2D(sites: list,
     return disp_sites
 
 
-def bond_2D(lat: list,
-            D=params['R']):
+def bond_2D(lat: list, D=params["R"]):
     """
     Returns the bonds of the lattice.
 
@@ -194,7 +192,7 @@ def bond_2D(lat: list,
 
     tree = spatial.KDTree(
         out
-    )  # This class provides an index into a set of k-dimensional points which 
+    )  # This class provides an index into a set of k-dimensional points which
     # can be used to rapidly look up the nearest neighbors of any point.
     # Theta function in the hoppings
     bonds = tree.query_ball_point(
@@ -203,7 +201,7 @@ def bond_2D(lat: list,
     info_bond = list()
     info_bond2 = list()
 
-    for i in range(len(bonds)):
+    for i, b in enumerate(bonds):
         b = bonds[i]
         b.remove(i)  # remove onsite
         a = list()
@@ -217,9 +215,7 @@ def bond_2D(lat: list,
                 )  # readjusts from a PBC copy to the index in the OBC
 
             if i < new_index:
-                vec_dist, dist = distance(
-                                np.array(out[item]), np.array(out[i])
-                                )
+                vec_dist, dist = distance(np.array(out[item]), np.array(out[i]))
                 info_bond.append([i, new_index, vec_dist])
                 info_bond2.append((i, new_index))
                 a.append(new_index)
@@ -227,11 +223,9 @@ def bond_2D(lat: list,
     return info_bond2
 
 
-def sites_bonds_generator(Lx: int,
-                          Ly: int,
-                          dis_amorph: float,
-                          seed_amorph: int,
-                          koala=True):
+def sites_bonds_generator(
+    Lx: int, Ly: int, dis_amorph: float, seed_amorph: int, koala=True
+):
 
     sites = [(x, y) for x in range(-Lx, Lx) for y in range(-Ly, Ly)]
 
@@ -243,6 +237,7 @@ def sites_bonds_generator(Lx: int,
     bonds = bond_2D(sites)
 
     return sites, bonds
+
 
 # rng_W = np.random.default_rng(int(seed_onsite))
 # rng_hdmd = np.random.default_rng(int(seed_hadamard))
