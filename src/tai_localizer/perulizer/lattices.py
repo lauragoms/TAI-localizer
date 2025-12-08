@@ -1,7 +1,7 @@
 import numpy as np
 from koala.lattice import Lattice
 
-
+# same function as bonds_2D in laura's code
 def proximity_bonds(positions: np.ndarray, distance_threshold: float) -> tuple:
     """Generates a lattice from a pointset by connecting every pair of vertices that is closer than a threshold
 
