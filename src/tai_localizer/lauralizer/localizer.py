@@ -1,6 +1,7 @@
 
 
 import numpy as np
+from numpy import einsum
 import scipy.sparse as sp
 import kwant
 
@@ -37,16 +38,24 @@ def spectral_localizer_AII2D(
     Y = sp.diags(np.kron(positions[:, 1], [1] * 4))
 
     TR = sp.kron(sp.kron(sp.eye(Ls), sigma_0), sigma_y)
+
+    # h_trs = einsum("ji,jk,kl -> il", (-1j*TR).todense(),
+    #                ham.todense(), (-1j*TR).todense())
+    h_trs = TR @ ham @ TR
+
+    assert np.allclose(sp.linalg.norm(h_trs-ham.conj()).max(), 0), "System doesn't have TRS symmetry"
+
     D = (X - (x0) * sp.eye(norbs * Ls)) + 1j * (Y - (y0) * sp.eye(norbs * Ls))
     Q = (1 / np.sqrt(2)) * sp.bmat(
         [[sp.eye(norbs * Ls), TR], [-TR, sp.eye(norbs * Ls)]]
     )
     h = ham - E0 * sp.eye(norbs * Ls)
 
-    localizer = sp.bmat([[h, kappa * np.conjugate(D)], [kappa * D, -h]])
-    loc_rotated = 1j * np.conjugate(Q) @ localizer @ Q
+    localizer = sp.bmat([[h, kappa * D.conj()], [kappa * D, -h]])
+    loc_rotated = 1j * Q.conj() @ localizer @ Q
 
     return loc_rotated if rotated else localizer
+
 
 def invariant_localizer(loc_rotated: np.array):
     invariant = np.sign(_fast_pfaffian(loc_rotated)[0])
@@ -62,7 +71,7 @@ def dos_kpm(L: sp.csr_matrix,
             bounds: tuple = (-1, 1),
             number_points: int = 200,
             energy_resol: float = 0.01):
-    
+  
     es = np.linspace(*bounds, number_points)
     spectrum = kwant.kpm.SpectralDensity(hamiltonian=L)
     spectrum.add_moments(energy_resolution=energy_resol)
@@ -71,3 +80,4 @@ def dos_kpm(L: sp.csr_matrix,
 
     gap = find_dos_gap(es, DOS)
     return DOS, gap
+
