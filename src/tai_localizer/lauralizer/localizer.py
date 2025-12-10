@@ -14,7 +14,9 @@ def spectral_localizer_AII2D(
     ham: sp.csr_matrix,
     E0: float,
     kappa: float,
+    norbs: int = 4,
     rotated: bool = True,
+    X0 = None,
 ) -> sp.csr_matrix:
     """
     Spectral Localizer for class AII2D
@@ -27,15 +29,23 @@ def spectral_localizer_AII2D(
     :type E0: float
     :param kappa: Parameter Kappa for the spectral localizer
     :type kappa: float
+    :param norbs: Number of orbitals per site
+    :type norbs: int
+    :param X0: Reference position for the localizer
+    :type X0: tuple or None
     :param rotated: True for computing the pfaffian
     :type rotated: bool
     """
-    norbs = 4
+    
+    if X0 is None:
+        x0, y0 = np.average(positions, axis=0)
+    else:
+        x0, y0 = X0
+        
     Ls = ham.shape[0] // norbs
-    x0, y0 = np.average(positions, axis=0)
 
-    X = sp.diags(np.kron(positions[:, 0], [1] * 4))
-    Y = sp.diags(np.kron(positions[:, 1], [1] * 4))
+    X = sp.diags(np.kron(positions[:, 0], [1] * norbs))
+    Y = sp.diags(np.kron(positions[:, 1], [1] * norbs))
 
     TR = sp.kron(sp.kron(sp.eye(Ls), sigma_0), sigma_y)
 
