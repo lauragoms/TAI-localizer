@@ -8,6 +8,8 @@ from koala.lattice import Lattice
 sigma_x = np.array([[0, 1], [1, 0]])
 sigma_y = np.array([[0, -1j], [1j, 0]])
 sigma_z = np.array([[1, 0], [0, -1]])
+spin_states = np.kron(np.ones(2), np.array([1, -1])) 
+
 
 def chern_marker(l, P, fix=False):
     positions = l.vertices.positions
@@ -34,6 +36,22 @@ def chern_marker(l, P, fix=False):
     return m_out * 4 * np.pi * l.n_vertices
 
 
+def spin_chern_marker(l, P, s_z = spin_states, fix=False):
+
+    spin_up = s_z == 1
+    spin_down = s_z == -1
+
+    su = np.kron(np.ones(l.n_vertices), spin_up)
+    sd = np.kron(np.ones(l.n_vertices), spin_down)
+
+    p_up = np.einsum("i,ij,j -> ij", su, P, su)
+    p_down = np.einsum("i,ij,j -> ij", sd, P, sd)
+
+    c_up = chern_marker(l, p_up, fix)
+    c_down = chern_marker(l, p_down, fix)
+
+    return np.average(c_up - c_down) / 2
+
 def _fast_pfaffian(K):
     if np.iscomplex(K).any():
         raise AttributeError("Matrix should be real >:|")
@@ -57,12 +75,19 @@ def z2_spec_loc(
     pos = lattice.vertices.positions
     h_size = hamiltonian.shape[0]
     n_dof = h_size // len(pos)
-    full_trs = np.kron(np.eye(lattice.n_vertices), trs_operator)
+
+    trs_shape = trs_operator.shape
+    scaling = h_size // trs_shape[0]
+
+    if scaling != 1:
+        full_trs = np.kron(np.eye(scaling), trs_operator)
+    else:
+        full_trs = trs_operator
 
     # this operation could be faster if we used sparse...
-    h_trs = einsum("ji,jk,kl -> il", full_trs, hamiltonian, full_trs)
+    h_trs = einsum("ji,jk,kl -> il", full_trs.conj(), hamiltonian, full_trs)
 
-    assert trs_operator.shape == (n_dof, n_dof), "TRS operator has wrong shape"
+    # assert trs_operator.shape == (n_dof, n_dof), f"TRS operator has wrong shape, {trs_operator.shape}"
     assert np.allclose(h_trs, hamiltonian.conj()), "System doesn't have TRS symmetry"
 
     # make the q operator:

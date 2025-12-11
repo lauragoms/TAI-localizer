@@ -67,7 +67,7 @@ def spectral_localizer_AII2D(
     return loc_rotated if rotated else localizer
 
 
-def invariant_localizer(loc_rotated: np.array):
+def pfaff_sign(loc_rotated: np.array):
     invariant = np.sign(_fast_pfaffian(loc_rotated)[0])
     return invariant
 
