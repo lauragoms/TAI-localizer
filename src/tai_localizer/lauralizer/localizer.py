@@ -17,6 +17,7 @@ def spectral_localizer_AII2D(
     norbs: int = 4,
     rotated: bool = True,
     X0 = None,
+    time_reversal_operator = None,
 ) -> sp.csr_matrix:
     """
     Spectral Localizer for class AII2D
@@ -47,13 +48,17 @@ def spectral_localizer_AII2D(
     X = sp.diags(np.kron(positions[:, 0], [1] * norbs))
     Y = sp.diags(np.kron(positions[:, 1], [1] * norbs))
 
-    TR = sp.kron(sp.kron(sp.eye(Ls), sigma_0), sigma_y)
+    if time_reversal_operator is None:
+        TR = sp.kron(sp.kron(sp.eye(Ls), sigma_0), sigma_y)
+    else:
+        TR  = time_reversal_operator
 
     # h_trs = einsum("ji,jk,kl -> il", (-1j*TR).todense(),
     #                ham.todense(), (-1j*TR).todense())
     h_trs = TR @ ham @ TR
 
     assert np.allclose(sp.linalg.norm(h_trs-ham.conj()).max(), 0), "System doesn't have TRS symmetry"
+    
 
     D = (X - (x0) * sp.eye(norbs * Ls)) + 1j * (Y - (y0) * sp.eye(norbs * Ls))
     Q = (1 / np.sqrt(2)) * sp.bmat(
@@ -64,7 +69,12 @@ def spectral_localizer_AII2D(
     localizer = sp.bmat([[h, kappa * D.conj()], [kappa * D, -h]])
     loc_rotated = 1j * Q.conj() @ localizer @ Q
 
-    return loc_rotated if rotated else localizer
+    out = loc_rotated if rotated else localizer
+    # make sure its real
+    assert np.allclose(abs(out.imag).max(), 0), "Localizer is not real"
+    
+
+    return out.real
 
 
 def pfaff_sign(loc_rotated: np.array):
