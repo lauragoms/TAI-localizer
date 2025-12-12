@@ -22,6 +22,7 @@ def param_obs_2b(
     hadamard_disorder: float = 0,
     kappa=1,
     disorder_average=1,
+    beta = 5
 ) -> tuple:
 
     # make the points
@@ -31,7 +32,7 @@ def param_obs_2b(
     loc_out = np.zeros(disorder_average)
 
     for j in range(disorder_average):
-        points = pointsets.move_all_points(points, sigma, sigma, 8)
+        points = pointsets.move_all_points(points, sigma, sigma, beta)
 
         # make the lattice
         edges, c = proximity_bonds(points, bond_distance)
@@ -49,6 +50,7 @@ def param_obs_2b(
             "dis_hadamard": 0,
             "dis_onsite": onsite_disorder,
             "mu": 0,
+            "bond_lengthscale": 1/system_size
         }
 
         # make the system in kwant

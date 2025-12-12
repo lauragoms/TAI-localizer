@@ -30,10 +30,12 @@ def param_to_observables(
         trs_operator = np.kron(np.eye(scaling), trs_operator)
         trs_operator = unitary @ trs_operator @ unitary.conj().T
 
+    rng = np.random.default_rng()
+
     for j in range(disorder_average):
         # unpack parameters
-        ws = (np.random.rand(lattice.n_vertices) * 2 - 1) * w / 2
-        wp = (np.random.rand(lattice.n_vertices) * 2 - 1) * w / 2
+        ws = (rng.random(lattice.n_vertices) * 2 - 1) * w / 2
+        wp = (rng.random(lattice.n_vertices) * 2 - 1) * w / 2
 
         l_open = gu.cut_boundaries(lattice)
 
@@ -70,47 +72,9 @@ def param_to_observables(
     b = np.mean(b_list)
     g = np.mean(g_list)
     s = np.mean(s_list)
-    return b + g + s, b, g, s
+    b_std = np.std(b_list)
+    g_std = np.std(g_list)
+    s_std = np.std(s_list)
 
-
-# def param_obs_2b(sig, Delta, dis_onsite, system_size, A, B, dis_hadamard):
-
-#     # for seed in seed_range? average over disorder?
-#     rng = np.random.default_rng()
-
-#     par_dict = {
-#         "norbs": 4,
-#         "rng_hdmd": rng,
-#         "Delta": Delta,
-#         "dis_hadamard": dis_hadamard * 100,
-#         "mu": 0,
-#         "A": A,
-#         "B": B,
-#         "rng_W": rng,
-#         "dis_onsite": dis_onsite,
-#     }
-
-#     # create koala lattice with a diff sigma
-#     L = system_size
-#     radius = np.sqrt(2) / L - 0.0001
-#     sigma = sig * 1 / L
-
-#     points = pointsets.grid(L, L)
-#     points = pointsets.move_all_points(points, sigma, sigma, 8)
-
-#     e, c = proximity_bonds(points, radius)
-#     not_crossing = np.abs(c).sum(axis=1) == 0
-
-#     # create kwant system
-#     system = amorph_BHZ(
-#         L * points, e[not_crossing]
-#     )  # if you change L, you should change kappa ~ 1/L
-#     fsyst = system.finalized()
-#     ham = fsyst.hamiltonian_submatrix(params=par_dict, sparse=True)
-#     positions = [site.pos for site in fsyst.sites]
-
-#     # compute localizer
-#     loc_rotated = spectral_localizer_AII2D(np.array(positions), ham, E0=0, kappa=0.1)
-#     inv_localizer = pfaff_sign(loc_rotated.todense())
-
-#     return inv_localizer
+ 
+    return b + g + s, b, g, s, b_std, g_std, s_std
