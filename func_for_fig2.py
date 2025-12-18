@@ -2,13 +2,66 @@ import numpy as np
 import scipy.sparse as sp
 
 from koala import pointsets
-from tai_localizer.perulizer import proximity_bonds, randomly_rotate, sigma_y
+from koala import graph_utils as gu
+
+
+from tai_localizer.perulizer import (
+    proximity_bonds,
+    randomly_rotate,
+    sigma_y,
+    proximity_lattice,
+    bhz_ham,
+    bhz_trs_operator,
+    z2_spec_loc,
+)
 
 from tai_localizer.lauralizer.amorphous_model_BHZ_2D import amorph_BHZ
 from tai_localizer.lauralizer.localizer import (
     spectral_localizer_AII2D,
     pfaff_sign,
 )
+
+
+def param_obs_2d_benchmark_peru(
+    system_size: int,
+    sigma: float,
+    bond_distance: float,
+    A: float,
+    B: float,
+    Delta: float,
+    onsite_disorder: float,
+    alpha: float = 0,
+    hadamard_disorder: float = 0,
+    kappa=1,
+    disorder_average=1,
+    beta=5,
+    **kwargs
+) -> tuple:
+
+    # make the points
+    rng = np.random.default_rng()
+    points = pointsets.grid(system_size, system_size)
+
+    s_list = np.zeros(disorder_average)
+    for j in range(disorder_average):
+        points = pointsets.move_all_points(points, sigma, sigma, beta)
+        lattice = proximity_lattice(points, bond_distance)
+        lattice = gu.cut_boundaries(lattice)
+
+        ws = (rng.random(lattice.n_vertices) * 2 - 1) * onsite_disorder / 2
+        wp = (rng.random(lattice.n_vertices) * 2 - 1) * onsite_disorder / 2
+        ham_params = (
+            A,
+            B,
+            alpha,
+            Delta,
+            ws,
+            wp,
+        )
+        hamiltonian = bhz_ham(lattice, *ham_params, **kwargs)
+        spec_loc = z2_spec_loc(lattice, hamiltonian, 0, bhz_trs_operator)
+        s_list[j] = spec_loc
+    return np.average(s_list)
 
 
 def param_obs_2b(
@@ -22,7 +75,8 @@ def param_obs_2b(
     hadamard_disorder: float = 0,
     kappa=1,
     disorder_average=1,
-    beta = 5
+    beta=5,
+    bond_power=1,
 ) -> tuple:
 
     # make the points
@@ -50,7 +104,8 @@ def param_obs_2b(
             "dis_hadamard": 0,
             "dis_onsite": onsite_disorder,
             "mu": 0,
-            "bond_lengthscale": 1/system_size
+            "bond_lengthscale": 1 / system_size,
+            "bond_power": bond_power,
         }
 
         # make the system in kwant
@@ -65,16 +120,20 @@ def param_obs_2b(
                 len(positions), hadamard_disorder, sparse=True
             )
             ham = random_unitary.conj().T @ ham @ random_unitary
-            trs_operator =  sp.kron(sp.eye(len(positions)*2), sigma_y)
+            trs_operator = sp.kron(sp.eye(len(positions) * 2), sigma_y)
             trs_operator = random_unitary @ trs_operator @ random_unitary.conj().T
         else:
             trs_operator = None
 
-
         # compute localizer
         loc_rotated = spectral_localizer_AII2D(
-            np.array(positions), ham, E0=0, kappa=kappa, time_reversal_operator=trs_operator)
-        
+            np.array(positions),
+            ham,
+            E0=0,
+            kappa=kappa,
+            time_reversal_operator=trs_operator,
+        )
+
         inv_localizer = pfaff_sign(loc_rotated.todense())
 
         loc_out[j] = inv_localizer

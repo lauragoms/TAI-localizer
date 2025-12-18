@@ -83,6 +83,7 @@ def amorph_hopping(
     A: float,
     B: float,
     bond_lengthscale: float,
+    bond_power: int,
 ):
 
     vec = np.array(site2.pos - site1.pos)
@@ -99,10 +100,11 @@ def amorph_hopping(
     hop_strength = B * np.kron(sigma_z, sigma_0)
     hop_x_SOC = np.cos(phi) * (A / (2j) * np.kron(sigma_x, spin))
     hop_y_SOC = -np.sin(phi) * A / (2j) * np.kron(sigma_y, sigma_0)
-    
-    hopping_multiplier = np.exp(1-rho/bond_lengthscale)
 
-    return hopping_multiplier*(hop_strength + hop_x_SOC + hop_y_SOC)
+    hopping_exponent = (rho - bond_lengthscale) / bond_lengthscale
+    hopping_multiplier = np.exp(- hopping_exponent ** bond_power)
+
+    return hopping_multiplier * (hop_strength + hop_x_SOC + hop_y_SOC)
 
 
 """amorphous system"""

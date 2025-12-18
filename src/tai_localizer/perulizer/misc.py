@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import sparse as sp
+from scipy.stats import unitary_group
 
 sigma_x = np.array([[0, 1], [1, 0]])
 sigma_y = np.array([[0, -1j], [1j, 0]])
@@ -8,6 +9,8 @@ sigma_0 = np.array([[1, 0], [0, 1]])
 hadamard = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
 
 bhz_trs_operator = np.kron(np.eye(2), np.array([[0, 1], [-1, 0]]))
+random_unitary = unitary_group(2)
+
 
 
 def randomly_rotate(n_vertices, proportion, sparse = False):
