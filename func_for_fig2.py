@@ -67,13 +67,14 @@ def param_obs_2d_benchmark_peru(
 def param_obs_2b(
     system_size: int,
     sigma: float,
+    kappa_shift: float,
     bond_distance: float,
     A: float,
     B: float,
     Delta: float,
     onsite_disorder: float,
     hadamard_disorder: float = 0,
-    kappa=1,
+    kappa_spec=1,
     disorder_average=1,
     beta=5,
     bond_power=1,
@@ -86,7 +87,7 @@ def param_obs_2b(
     loc_out = np.zeros(disorder_average)
 
     for j in range(disorder_average):
-        points = pointsets.move_all_points(points, sigma, sigma, beta)
+        points = pointsets.move_all_points(points, sigma, kappa_shift, beta)
 
         # make the lattice
         edges, c = proximity_bonds(points, bond_distance)
@@ -130,7 +131,7 @@ def param_obs_2b(
             np.array(positions),
             ham,
             E0=0,
-            kappa=kappa,
+            kappa=kappa_spec,
             time_reversal_operator=trs_operator,
         )
 

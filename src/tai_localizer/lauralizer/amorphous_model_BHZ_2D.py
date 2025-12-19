@@ -2,6 +2,7 @@ import copy
 
 import numpy as np
 from scipy import spatial
+from scipy import linalg as la
 
 import kwant
 
@@ -83,7 +84,7 @@ def amorph_hopping(
     A: float,
     B: float,
     bond_lengthscale: float,
-    bond_power: int,
+    bond_power: float,
 ):
 
     vec = np.array(site2.pos - site1.pos)
@@ -96,15 +97,16 @@ def amorph_hopping(
         spin = sigma_x
 
     rho, phi = polar_coords(vec[0], vec[1])
-
+    
     hop_strength = B * np.kron(sigma_z, sigma_0)
     hop_x_SOC = np.cos(phi) * (A / (2j) * np.kron(sigma_x, spin))
     hop_y_SOC = -np.sin(phi) * A / (2j) * np.kron(sigma_y, sigma_0)
 
-    hopping_exponent = (rho - bond_lengthscale) / bond_lengthscale
-    hopping_multiplier = np.exp(- hopping_exponent ** bond_power)
 
-    return hopping_multiplier * (hop_strength + hop_x_SOC + hop_y_SOC)
+    rescaled_distance = (rho - bond_lengthscale) / bond_lengthscale
+    hopping_multiplier = np.exp(- rescaled_distance * bond_power)
+
+    return hopping_multiplier*(hop_strength + hop_x_SOC + hop_y_SOC)
 
 
 """amorphous system"""
