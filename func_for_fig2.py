@@ -97,12 +97,10 @@ def param_obs_2b(
         # hamiltonian parameters
         parameters = {
             "norbs": 4,
-            "rng_hdmd": rng,
             "rng_W": rng,
             "Delta": Delta,
             "A": A,
             "B": B,
-            "dis_hadamard": 0,
             "dis_onsite": onsite_disorder,
             "mu": 0,
             "bond_lengthscale": 1 / system_size,

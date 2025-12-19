@@ -79,8 +79,6 @@ def onsite(
 def amorph_hopping(
     site1: kwant.builder.SiteFamily,
     site2: kwant.builder.SiteFamily,
-    rng_hdmd: np.random.default_rng,
-    dis_hadamard: float,
     A: float,
     B: float,
     bond_lengthscale: float,
@@ -89,12 +87,6 @@ def amorph_hopping(
 
     vec = np.array(site2.pos - site1.pos)
     spin = sigma_z
-    if (
-        dis_hadamard != 0
-        and rng_hdmd.choice([0, 1], p=[1 - dis_hadamard / 100, dis_hadamard / 100]) == 1
-    ):
-
-        spin = sigma_x
 
     rho, phi = polar_coords(vec[0], vec[1])
     
