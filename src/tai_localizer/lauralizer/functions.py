@@ -1,6 +1,4 @@
-from . import model_BHZ_2D as bhz
-# from . import model_TI_3D as m3ds
-# from . import pfaffian as pff
+from . import crystalline_model_BHZ_2D as bhz
 
 import numpy as np
 import scipy.sparse as sp
@@ -14,10 +12,37 @@ import scipy.sparse as sp
 from scipy.linalg import qr
 import mumps
 
-import pfapack.ctypes as cpf
+# import pfapack.ctypes as cpf
 import ctypes
 
 ctx = mumps.Context()  # Provided by python-mumps package
+
+
+norbs = 4
+class Amorphous(kwant.builder.SiteFamily):
+    """Creates a lattice from the positions of sites."""
+
+    def __init__(self, coords):
+        n = "a"
+        self.coords = coords
+        super(Amorphous, self).__init__(str(n + n), str(n), norbs)
+
+    def normalize_tag(self, tag):
+        try:
+            tag = int(tag[0])
+        except:
+            raise KeyError
+        if 0 <= tag < len(self.coords):
+            return tag
+        else:
+            raise KeyError
+
+    def pos(self, tag):
+        return self.coords[tag]
+
+    def family(self):
+        n = "a"
+        return str(n)
 
 
 def _fast_pfaffian(K):
@@ -137,183 +162,6 @@ sigma_y = np.array([[0, -1j], [1j, 0]])
 sigma_z = np.array([[1, 0], [0, -1]])
 sigma_01 = sp.csr_matrix(([1], ([0], [1])), shape=(2, 2))
 sigma_10 = sp.csr_matrix(([1], ([1], [0])), shape=(2, 2))
-
-
-"""Spectral Localizer BHZ model"""
-
-
-def pos_H(fsyst, coord=0):
-    """Calculate the position operator in the 'coord' direction of the
-    Hamiltonian of fsyst. It also computes the position operator for a given position with index=index_origin in fsyst.sites
-    """
-    H, ton, fon = fsyst.hamiltonian_submatrix(return_norb=True)
-    x = np.zeros(H.shape)
-    ind = 0
-
-    for i in range(len(fsyst.sites)):
-        for j in range(ind, ind + ton[i]):
-
-            x[j, j] = fsyst.sites[i].pos[coord]
-            # x0[j, j] = fsyst.sites[index_origin].pos[coord]
-        ind += ton[i]
-
-    return x
-
-
-def get_center(fsyst_sites):
-    sites = {}
-    d = len(fsyst_sites[0].pos)
-
-    for i in range(d):
-        sites[i] = []
-
-    for site in fsyst_sites:
-        site = site.pos
-        for coord in range(d):
-            sites[coord].append(site[coord])
-    if d == 1:
-        return (np.max(np.array(sites[0])) + np.min(np.array(sites[0]))) / 2
-    if d == 2:
-        return (np.max(np.array(sites[0])) + np.min(np.array(sites[0]))) / 2, (
-            np.max(np.array(sites[1])) + np.min(np.array(sites[1]))
-        ) / 2
-    if d == 3:
-        return (
-            (np.max(np.array(sites[0])) + np.min(np.array(sites[0]))) / 2,
-            (np.max(np.array(sites[1])) + np.min(np.array(sites[1]))) / 2,
-            (np.max(np.array(sites[2])) + np.min(np.array(sites[2]))) / 2,
-        )
-
-
-def spectral_localizer_AII2D(
-    fsyst,
-    ham,
-    W,
-    E0,
-    kappa,
-    X0=np.array(["None"]),
-    num_reals=50,
-    compute_inv=True,
-    compute_localgap=False,
-    compute_DOS=False,
-):
-    """Computes the spectral localizer for a 2D AII system.
-    ----------------
-    syst: kwant object non-finalized,
-
-    Returns
-    ----------------
-    pfaff_sign: Topological invariant as the sign of the pfaffian."""
-
-
-
-    Ls = len(fsyst.sites)
-
-
-    if X0[0] == "None":
-        X0 = get_center(fsyst.sites)
-    # if flatten==True:
-    #     ham = flattened_H(ham)
-
-    x0, y0 = X0
-
-    X = pos_H(fsyst, coord=0)
-    Y = pos_H(fsyst, coord=1)
-    id = np.identity(np.shape(ham)[0])
-    print("E0:", E0, "x0,y0:", x0, y0, "kappa:", kappa, "W:", W)
-
-    TR = np.kron(np.kron(np.identity(Ls), sigma_0), sigma_y)
-    D = (X - (x0) * id) + 1j * (Y - (y0) * id)
-
-    Q = (1 / np.sqrt(2)) * np.block([[id, TR], [-TR, id]])
-
-    if W == 0:
-        num_reals = 1
-    seed_range = np.arange(num_reals)
-    localgap_realization = 0
-    pfaffian_realizations = 0
-    list_pf_reals = []
-    list_localgap_realizations = []
-    density_subset_realizations = np.zeros(200, dtype=np.complex128)
-
-    print("Averaging over realizations...")
-    for ind, val in enumerate(seed_range):
-        update_progress((ind + 1) / len(seed_range))
-
-        seed = val
-        np.random.seed(int(seed))
-        # ANDERSON'S DISORDER
-        if W != 0:
-            disp = np.diag(
-                np.random.uniform(low=-W / 2, high=W / 2, size=len(fsyst.sites))
-            )
-            AND_disorder = np.kron(disp, np.eye(4))
-
-        if W == 0:
-            h = ham - E0 * id
-        else:
-            h = ham - E0 * id + AND_disorder
-
-        if compute_inv:
-            L = np.block([[h, kappa * np.conjugate(D)], [kappa * D, -h]])
-            Hp = 1j * np.conjugate(Q) @ L @ Q  # lorings section 5.4 i*conj(Q).H.Q
-
-            # pfaff_sign = np.real(pff.pfaffian(Hp,sign_only=True))
-    
-            pfaff_sign = np.sign(_fast_pfaffian(Hp, sign_only=True))
-            pfaffian_realizations = pfaffian_realizations + pfaff_sign
-            list_pf_reals.append(pfaff_sign)
-            print("Realization Pfaffian:", np.real(pfaff_sign))
-
-        if compute_localgap:
-            L_sparse = np.block([[h, kappa * np.conjugate(D)], [kappa * D, -h]])
-            start_time2 = time.perf_counter()
-            local_gap = eigsh(L_sparse, k=1, sigma=0)
-            print("Local gap realization:", local_gap)
-            end_time2 = time.perf_counter()
-            print("Time:", end_time2 - start_time2)
-
-            localgap_realization = localgap_realization + np.abs(local_gap)
-            list_localgap_realizations.append(np.abs(local_gap))
-        # Compute the Density of States of the Localizer with KPM
-        if compute_DOS is True:
-            start_time2 = time.perf_counter()
-            bounds = (-1, 1)
-            es = np.linspace(*bounds, 200)
-            L_sparse = sp.block([[h, kappa * np.conjugate(D)], 
-                                 [kappa * D, -h]])
-            spectrum = kwant.kpm.SpectralDensity(hamiltonian=L_sparse)
-            spectrum.add_moments(energy_resolution=0.01)
-            energy_subset = es
-            density_subset = spectrum(energy_subset)
-            DOS = np.real(density_subset) / np.max(np.real(density_subset))
-            density_subset_realizations += np.array(DOS)
-            # You get local gap for free!
-            localgap = find_dos_gap(energy_subset, DOS)
-            localgap_realization += localgap
-            list_localgap_realizations.append(localgap)
-            end_time2 = time.perf_counter()
-            print("Time:", end_time2 - start_time2)
-
-    pfaffian_averaged = pfaffian_realizations / num_reals
-    localgap_average = localgap_realization / num_reals
-    density_subset_average = density_subset_realizations / num_reals
-
-    if compute_inv:
-        print("Pfaffian sign:", pfaffian_averaged)
-        return pfaffian_averaged, list_pf_reals
-
-    if compute_localgap:
-        print("Local gap:", np.abs(localgap_average[0]))
-        return localgap_average, list_localgap_realizations
-
-    if compute_DOS is True:
-        return (
-            energy_subset,
-            density_subset_average,
-            localgap_average,
-            list_localgap_realizations,
-        )
 
 
 """Spectral Localizer 3D model"""
@@ -594,3 +442,43 @@ def average_conductance_W(E, Wr, Lx=4, Ly=4, num_reals=50, params=bhz.params):
         print("W:", W, "G:", G_avg)
 
     return G_W, G_W_reals
+
+
+def polar_coords(x0, y0):
+    """Determines spherical coordinates of a point with
+    respect to 0.
+
+
+    Parameters
+    -----------------
+    x0, y0 : floats,
+        2D position of the point
+    Returns
+    ----------------
+    rho,  phi : floats,
+        spherical coordinates"""
+
+    rho = np.sqrt((x0) ** 2 + (y0) ** 2)
+
+    phi = np.sign(y0) * np.arccos(x0 / np.sqrt(x0**2 + y0**2))
+    return rho, phi
+
+
+def spherical_coord_general(x0, y0, z0):
+    ''' Determines spherical coordinates of a point with
+    respect to 0.
+
+    Parameters
+    -----------------
+    x0, y0, z0: floats,
+        3D position of the point (or vector)
+
+    Returns
+    ----------------
+    rho, theta, phi: floats,
+        spherical coordinates'''
+
+    rho = np.sqrt((x0)**2+(y0)**2+(z0)**2)
+    phi = np.sign(y0)*np.arccos(x0/np.sqrt(x0**2+y0**2))
+    theta = np.arccos(((z0)/rho))
+    return rho, theta, phi

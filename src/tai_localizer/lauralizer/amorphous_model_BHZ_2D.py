@@ -1,10 +1,12 @@
-import copy
+from .functions import Amorphous, polar_coords
 
 import numpy as np
 from scipy import spatial
 from scipy import linalg as la
 
 import kwant
+import copy
+
 
 params = dict(
     norbs=4,
@@ -38,26 +40,6 @@ sigma_y = np.array([[0, -1j], [1j, 0]])
 sigma_z = np.array([[1, 0], [0, -1]])
 
 
-def polar_coords(x0, y0):
-    """Determines spherical coordinates of a point with
-    respect to 0.
-
-
-    Parameters
-    -----------------
-    x0, y0 : floats,
-        2D position of the point
-    Returns
-    ----------------
-    rho,  phi : floats,
-        spherical coordinates"""
-
-    rho = np.sqrt((x0) ** 2 + (y0) ** 2)
-
-    phi = np.sign(y0) * np.arccos(x0 / np.sqrt(x0**2 + y0**2))
-    return rho, phi
-
-
 def onsite(
     site: kwant.builder.SiteFamily,
     rng_W: np.random.default_rng,
@@ -89,11 +71,10 @@ def amorph_hopping(
     spin = sigma_z
 
     rho, phi = polar_coords(vec[0], vec[1])
-    
+
     hop_strength = B * np.kron(sigma_z, sigma_0)
     hop_x_SOC = np.cos(phi) * (A / (2j) * np.kron(sigma_x, spin))
     hop_y_SOC = -np.sin(phi) * A / (2j) * np.kron(sigma_y, sigma_0)
-
 
     rescaled_distance = (rho - bond_lengthscale) / bond_lengthscale
     hopping_multiplier = np.exp(- rescaled_distance * bond_power)
@@ -102,32 +83,6 @@ def amorph_hopping(
 
 
 """amorphous system"""
-
-
-class Amorphous(kwant.builder.SiteFamily):
-    """Creates a lattice from the positions of sites."""
-
-    def __init__(self, coords):
-        n = params["name"]
-        self.coords = coords
-        super(Amorphous, self).__init__(str(n + n), str(n), params["norbs"])
-
-    def normalize_tag(self, tag):
-        try:
-            tag = int(tag[0])
-        except:
-            raise KeyError
-        if 0 <= tag < len(self.coords):
-            return tag
-        else:
-            raise KeyError
-
-    def pos(self, tag):
-        return self.coords[tag]
-
-    def family(self):
-        n = params["name"]
-        return str(n)
 
 
 def Displacement_2D(sites: list, seed: int, sigma: float):
