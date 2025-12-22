@@ -6,19 +6,22 @@ from math import sqrt
 from scipy import spatial
 import copy
 
-from .functions import Amorphous, spherical_coord_general, sigma_0, sigma_x, sigma_y, sigma_z
+from .functions import (
+    Amorphous,
+    spherical_coord_general,
+    sigma_0,
+    sigma_x,
+    sigma_y,
+    sigma_z)
 
 params = dict(
     pbc=False,
     R=1.01,
     MJ=2.3,
     lambdaJ=1,
-    BJ=0.,
-    break_PH=0.05,
     norbs=4,
     name='a',
     dis_onsite=0,
-    mu=0
     )
 
 tau_0 = s_0 = sigma_0
@@ -70,7 +73,7 @@ def Bond_3D(
 def onsite(
         site: kwant.builder.SiteFamily,
         MJ: float,
-        BJ: float,
+        # BJ: float,
         dis_onsite: float,
         rng_W: np.random.default_rng,
 ):
@@ -80,28 +83,31 @@ def onsite(
 
     return (
         MJ*kron(tau_z, sigma_0)
-        + kron(tau_0, (BJ/sqrt(3))*(sigma_x + sigma_y + sigma_z))
         + disorder*kron(tau_0, sigma_0)
+        # + kron(tau_0, (BJ/sqrt(3))*(sigma_x + sigma_y + sigma_z))
         )
 
 
 def amorph_hopping(
         site1: kwant.builder.SiteFamily,
         site2: kwant.builder.SiteFamily,
-        norbs: int,
         lambdaJ: float,
+        bond_lengthscale: float,
+        bond_power: float,
         ):
 
     vec = np.array(site1.pos - site2.pos)
     rho, theta, phi = spherical_coord_general(*vec)
-    
-    if np.allclose(vec, np.zeros(3), atol=1e-5):
-        return np.zeros((norbs, norbs), dtype=complex)
 
-    else:
-        SIGMA = -(vec[0]*sigma_x + vec[1]*sigma_y + vec[2]*sigma_z)
-        return (kron(tau_z, sigma_0)*(1/2)
-                - 1j*lambdaJ*kron(tau_x, SIGMA)*(1/2))
+    tx = np.sin(theta)*np.cos(phi) * np.kron(tau_x, sigma_x)
+    ty = np.sin(theta)*np.sin(phi) * np.kron(tau_x, sigma_y)
+    tz = np.cos(theta) * np.kron(tau_x, sigma_z)
+    t0 = kron(tau_z, sigma_0)*(1/2)
+
+    rescaled_distance = (rho - bond_lengthscale) / bond_lengthscale
+    hopping_multiplier = np.exp(- rescaled_distance * bond_power)
+
+    return (-1j*(lambdaJ/2)*(tx + ty + tz + t0)) * hopping_multiplier
 
 
 # sites = [(x,y,z) for x in range(-Lx,Lx) for y in range(-Ly,Ly) for z in range (-Lz,Lz)] 
