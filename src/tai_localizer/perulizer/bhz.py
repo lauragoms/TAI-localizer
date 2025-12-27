@@ -2,6 +2,7 @@ import numpy as np
 from scipy import linalg as la
 from .misc import sigma_x, sigma_y, sigma_z
 from koala.lattice import Lattice
+from copy import copy
 
 
 def _tx(A, B, alpha):
@@ -46,9 +47,10 @@ def bhz_ham(
     Delta: float,
     ws_vals: np.ndarray,
     wp_vals: np.ndarray,
-    hopping_lengthscale:np.ndarray = None,
+    hopping_lengthscale: np.ndarray = None,
     hopping_power: int = 1,
 ) -> np.ndarray:
+
     # check iterability
     try:
         iter(ws_vals)
@@ -63,19 +65,23 @@ def bhz_ham(
     angles = np.arctan2(*lattice.edges.vectors.T)
     distances = la.norm(lattice.edges.vectors, axis=1)
     if hopping_lengthscale is not None:
-        hopping_strengths = np.exp(-((distances-hopping_lengthscale)/hopping_lengthscale)**hopping_power)
+        hopping_strengths = np.exp(
+            -(
+                ((distances - hopping_lengthscale) / hopping_lengthscale)
+                ** hopping_power
+            )
+        )
     else:
         hopping_strengths = np.ones(len(distances))
 
-    hopping = np.zeros(
-        [lattice.n_vertices * 4, lattice.n_vertices * 4], dtype=complex
-    )
+    hopping = np.zeros([lattice.n_vertices * 4, lattice.n_vertices * 4], dtype=complex)
     for n in range(lattice.n_edges):
-        i, j = lattice.edges.indices[n]
+        pi, pj = 4 * lattice.edges.indices[n].astype(int)
         angle = angles[n]
-        bond_op = _t_theta(A, B, alpha, angle)*hopping_strengths[n]
-        hopping[i * 4 : (i + 1) * 4, j * 4 : (j + 1) * 4] += bond_op
-        hopping[j * 4 : (j + 1) * 4, i * 4 : (i + 1) * 4] += bond_op.conj().T
+        bond_op = _t_theta(A, B, alpha, angle) * hopping_strengths[n]
+
+        hopping[pi : pi + 4, pj : pj + 4] += bond_op
+        hopping[pj : pj + 4, pi : pi + 4] += bond_op.conj().T
 
     onsite = np.zeros([lattice.n_vertices * 4, lattice.n_vertices * 4])
     for i in range(lattice.n_vertices):

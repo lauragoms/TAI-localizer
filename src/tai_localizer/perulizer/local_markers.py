@@ -1,6 +1,9 @@
 import ctypes
 import numpy as np
 from jax.numpy import einsum
+from scipy import linalg as la
+
+from matplotlib import pyplot as plt
 
 import pfapack.ctypes as cpf
 from koala.lattice import Lattice
@@ -8,7 +11,7 @@ from koala.lattice import Lattice
 sigma_x = np.array([[0, 1], [1, 0]])
 sigma_y = np.array([[0, -1j], [1j, 0]])
 sigma_z = np.array([[1, 0], [0, -1]])
-spin_states = np.kron(np.ones(2), np.array([1, -1])) 
+spin_states = np.kron(np.ones(2), np.array([1, -1]))
 
 
 def chern_marker(l, P, fix=False):
@@ -36,19 +39,22 @@ def chern_marker(l, P, fix=False):
     return m_out * 4 * np.pi * l.n_vertices
 
 
-def spin_chern_marker(l, P, s_z = spin_states, fix=False):
+def spin_chern_marker(l, P, s_z = spin_states, fix=False, return_spin_gap = False):
 
-    spin_up = s_z == 1
-    spin_down = s_z == -1
+    spin = np.kron(np.ones(l.n_vertices), s_z)
+    
+    Q = np.eye(P.shape[0]) - P
+    projected_spin = (P*spin)@P + 3*Q
+    e, v = la.eigh(projected_spin)
 
-    su = np.kron(np.ones(l.n_vertices), spin_up)
-    sd = np.kron(np.ones(l.n_vertices), spin_down)
-
-    p_up = np.einsum("i,ij,j -> ij", su, P, su)
-    p_down = np.einsum("i,ij,j -> ij", sd, P, sd)
+    p_up = v *(e < 0) @ v.conj().T
+    p_down = v * ((e > 0)*(e<2)) @ v.conj().T
 
     c_up = chern_marker(l, p_up, fix)
     c_down = chern_marker(l, p_down, fix)
+
+    if return_spin_gap:
+        return np.average(c_up - c_down) / 2, np.min(np.abs(e))
 
     return np.average(c_up - c_down) / 2
 

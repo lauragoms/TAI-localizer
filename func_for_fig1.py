@@ -25,6 +25,8 @@ def param_to_observables(
     b_list = np.zeros(disorder_average)
     g_list = np.zeros(disorder_average)
     s_list = np.zeros(disorder_average)
+    s_gap_list = np.zeros(disorder_average)
+
     if unitary is not None:
         scaling = (lattice.n_vertices * 4) // trs_operator.shape[0]
         trs_operator = np.kron(np.eye(scaling), trs_operator)
@@ -59,22 +61,24 @@ def param_to_observables(
         e, v = la.eigh(hamiltonian)
         full_proj = v @ np.diag(e < 0) @ v.conj().T
 
-        b_out = spin_chern_marker(lattice, full_proj, fix=True)
+        b_out, spin_gap = spin_chern_marker(lattice, full_proj, fix=True, return_spin_gap=True)
 
         gap_out = np.min(np.abs(e))
         b_list[j] = b_out
         g_list[j] = gap_out
+        s_gap_list[j] = spin_gap
 
         # find spectral localiser
         spec_loc = z2_spec_loc(l_open, hamiltonian_open, 0, trs_operator)
         s_list[j] = 0.5 * (1 - spec_loc)
 
-    b = np.mean(b_list)
-    g = np.mean(g_list)
-    s = np.mean(s_list)
-    b_std = np.std(b_list)
-    g_std = np.std(g_list)
-    s_std = np.std(s_list)
+    bott = np.mean(b_list)
+    gap = np.mean(g_list)
+    spec = np.mean(s_list)
+    s_gap = np.mean(spin_gap)
+    # b_std = np.std(b_list)
+    # g_std = np.std(g_list)
+    # s_std = np.std(s_list)
 
  
-    return b + g + s, b, g, s, b_std, g_std, s_std
+    return bott + spec, bott, gap, spec, spin_gap
