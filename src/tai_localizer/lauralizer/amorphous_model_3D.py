@@ -65,7 +65,7 @@ def amorph_hopping(
     tx = np.sin(theta)*np.cos(phi) * np.kron(tau_x, sigma_x)
     ty = np.sin(theta)*np.sin(phi) * np.kron(tau_x, sigma_y)
     tz = np.cos(theta) * np.kron(tau_x, sigma_z)
-    t0 = kron(tau_z, sigma_0)*(1/2)
+    t0 = 1j*kron(tau_z, sigma_0)
 
 
     rescaled_distance = (rho - bond_lengthscale) / bond_lengthscale
