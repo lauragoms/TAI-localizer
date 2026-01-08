@@ -30,44 +30,7 @@ tau_y = s_y = sigma_y
 tau_z = s_z = sigma_z
 
 
-def Bond_3D(
-    lat: list,
-    D: float
-):
 
-    """ Return bonds in 3D lattice
-
-    Parameters:
-    ----------
-    lat : list
-        List of lattice site positions
-    D : float
-        Cut-off distance for bonding
-    """
-
-    og_size = len(lat)  # how many sites in OBC
-    out = copy.deepcopy(lat)
-
-    tree = spatial.KDTree(out)
-    # Find points in lat that are within distance r of out
-    bonds = tree.query_ball_point(x=lat, r=D)
-    info_bond = list()
-
-    for i in range(len(bonds)):
-        b = bonds[i]
-        b.remove(i)  # sremove onsite
-        a = list()
-        for item in b:
-            new_index = item
-            if item >= og_size:  # not in OBC
-                # Readjusts from a PBC copy to the index in the OBC
-                new_index = item - int(item/og_size)*og_size
-            if i < new_index:
-                info_bond.append([i, new_index])
-                # print(i,new_index,dist,out[i],out[item])
-                a.append(new_index)
-
-    return info_bond
 
 
 def onsite(
@@ -96,13 +59,14 @@ def amorph_hopping(
         bond_power: float,
         ):
 
-    vec = np.array(site1.pos - site2.pos)
+    vec = np.array(np.array(site1.pos) - np.array(site2.pos))
     rho, theta, phi = spherical_coord_general(*vec)
 
     tx = np.sin(theta)*np.cos(phi) * np.kron(tau_x, sigma_x)
     ty = np.sin(theta)*np.sin(phi) * np.kron(tau_x, sigma_y)
     tz = np.cos(theta) * np.kron(tau_x, sigma_z)
     t0 = kron(tau_z, sigma_0)*(1/2)
+
 
     rescaled_distance = (rho - bond_lengthscale) / bond_lengthscale
     hopping_multiplier = np.exp(- rescaled_distance * bond_power)
@@ -113,7 +77,7 @@ def amorph_hopping(
 # sites = [(x,y,z) for x in range(-Lx,Lx) for y in range(-Ly,Ly) for z in range (-Lz,Lz)] 
 
 
-def create_cubic_TI(
+def amorph_3DTI(
         sites: list,
         bonds: list
 ):
@@ -126,7 +90,7 @@ def create_cubic_TI(
         syst[lat(i)] = onsite
 
     # Hopping terms
-    for i, j, vec in bonds:
+    for i, j in bonds:
         syst[lat(i), lat(j)] = amorph_hopping
 
     return syst

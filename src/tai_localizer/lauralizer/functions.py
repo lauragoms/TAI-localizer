@@ -2,15 +2,15 @@ from . import crystalline_model_BHZ_2D as bhz
 
 import numpy as np
 import scipy.sparse as sp
+from scipy.linalg import qr
 import kwant
-import numpy as np
-import numpy.linalg as npl
+
 import time
 import sys
-import pylab as py
-import scipy.sparse as sp
-from scipy.linalg import qr
+
 import mumps
+from scipy import spatial
+import copy
 
 # import pfapack.ctypes as cpf
 import ctypes
@@ -479,6 +479,46 @@ def spherical_coord_general(x0, y0, z0):
         spherical coordinates'''
 
     rho = np.sqrt((x0)**2+(y0)**2+(z0)**2)
-    phi = np.sign(y0)*np.arccos(x0/np.sqrt(x0**2+y0**2))
+    phi = np.arctan2(y0, x0)
     theta = np.arccos(((z0)/rho))
     return rho, theta, phi
+
+
+def bonds_func(
+    lat: list,
+    D: float
+):
+
+    """ Return bonds in 3D lattice
+
+    Parameters:
+    ----------
+    lat : list
+        List of lattice site positions
+    D : float
+        Cut-off distance for bonding
+    """
+
+    og_size = len(lat)  # how many sites in OBC
+    out = copy.deepcopy(lat)
+
+    tree = spatial.KDTree(out)
+    # Find points in lat that are within distance r of out
+    bonds = tree.query_ball_point(x=lat, r=D)
+    info_bond = list()
+
+    for i in range(len(bonds)):
+        b = bonds[i]
+        b.remove(i)  # sremove onsite
+        a = list()
+        for item in b:
+            new_index = item
+            if item >= og_size:  # not in OBC
+                # Readjusts from a PBC copy to the index in the OBC
+                new_index = item - int(item/og_size)*og_size
+            if i < new_index:
+                info_bond.append([i, new_index])
+                # print(i,new_index,dist,out[i],out[item])
+                a.append(new_index)
+
+    return info_bond
