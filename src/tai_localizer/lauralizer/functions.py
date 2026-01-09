@@ -17,6 +17,9 @@ import ctypes
 
 ctx = mumps.Context()  # Provided by python-mumps package
 
+def zero_params(system):
+    return {parameter: 0 for parameter in system.parameters}
+
 
 norbs = 4
 class Amorphous(kwant.builder.SiteFamily):

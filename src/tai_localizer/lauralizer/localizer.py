@@ -7,8 +7,7 @@ import kwant
 import mumps
 ctx = mumps.Context()
 
-from tai_localizer.perulizer.misc import sigma_x, sigma_y, sigma_z, sigma_0
-from .functions import _fast_pfaffian, eigsh, find_dos_gap
+from .functions import _fast_pfaffian, eigsh, find_dos_gap, sigma_x, sigma_y, sigma_z, sigma_0
 
 sigma_01 = sp.csr_matrix(([1], ([0], [1])), shape=(2, 2))
 sigma_10 = sp.csr_matrix(([1], ([1], [0])), shape=(2, 2))
@@ -46,7 +45,7 @@ def spectral_localizer_AII2D(
         x0, y0 = np.average(positions, axis=0)
     else:
         x0, y0 = X0
- 
+
     Ls = ham.shape[0] // norbs
 
     X = sp.diags(np.kron(positions[:, 0], [1] * norbs))
@@ -85,7 +84,7 @@ def pfaff_sign(loc_rotated: np.array):
 
 
 def spectral_localizer_AII3D(
-    positions: list,
+    positions: np.array,
     ham: sp.csr_matrix,
     E0: float,
     kappa: float,
@@ -99,33 +98,49 @@ def spectral_localizer_AII3D(
 
     Parameters
     ----------
-
+    positions : np.array
+        List with positions of the sites
+    ham : sp.csr_matrix
+        Sparse Hamiltonian of the system
+    E0 : float
+        Energy to compute the spectral localizer
+    kappa : float
+        Parameter Kappa for the spectral localizer
+    norbs : int, optional
+        Number of orbitals per site, by default 4
+    X0 : tuple, optional
+        Reference position for the localizer, by default Center
+    whole_localizer : bool, optional
+        If True, returns the whole localizer, by default False
+    Returns
+    -------
+    sp.csr_matrix
+        Sparse spectral localizer matrix
     """
     if X0 is None:
         x0, y0, z0 = np.average(positions, axis=0)
     else:
         x0, y0, z0 = X0
 
-    Ls = ham.shape[0] // norbs
-
     X = sp.diags(
         np.kron(positions[:, 0], [1] * norbs)
-        ) - (x0) * sp.eye(norbs * Ls)
+        ) - (x0) * sp.eye(ham.shape[0])
     Y = sp.diags(
         np.kron(positions[:, 1], [1] * norbs)
-        ) - (y0) * sp.eye(norbs * Ls)
+        ) - (y0) * sp.eye(ham.shape[0])
     Z = sp.diags(
         np.kron(positions[:, 2], [1] * norbs)
-        ) - (z0) * sp.eye(norbs * Ls)
+        ) - (z0) * sp.eye(ham.shape[0])
 
     D = (
         sp.kron(X, sigma_x)
         + sp.kron(Y, sigma_y)
         + sp.kron(Z, sigma_z)
     )
+    # print(sp.kron(Z, sigma_z))
 
-    h = ham - E0 * sp.eye(norbs * Ls)
-
+    h = sp.kron((ham - E0 * sp.eye(ham.shape[0])), sigma_0)
+    print(x0,y0,z0)
     # Block of Localizer, just need this for Z2
     block_1 = h + 1j * kappa * D
 
@@ -143,15 +158,15 @@ def sign_det(matrix: sp.csr_matrix):
 
 
 def local_gap_localizer(localizer: sp.csr_matrix):
-        local_gap = eigsh(localizer, k=1, sigma=0)
-        return np.abs(local_gap)
+    local_gap = eigsh(localizer, k=1, sigma=0)
+    return np.abs(local_gap)
 
 
 def dos_kpm(L: sp.csr_matrix,
             bounds: tuple = (-1, 1),
             number_points: int = 200,
             energy_resol: float = 0.01):
-  
+
     es = np.linspace(*bounds, number_points)
     spectrum = kwant.kpm.SpectralDensity(hamiltonian=L)
     spectrum.add_moments(energy_resolution=energy_resol)

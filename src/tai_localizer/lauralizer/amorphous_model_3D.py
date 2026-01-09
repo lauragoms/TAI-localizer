@@ -3,8 +3,6 @@ import numpy as np
 from numpy import kron
 from math import sqrt
 
-from scipy import spatial
-import copy
 
 from .functions import (
     Amorphous,
@@ -28,9 +26,6 @@ tau_0 = s_0 = sigma_0
 tau_x = s_x = sigma_x
 tau_y = s_y = sigma_y
 tau_z = s_z = sigma_z
-
-
-
 
 
 def onsite(
@@ -59,18 +54,17 @@ def amorph_hopping(
         bond_power: float,
         ):
 
-    vec = np.array(np.array(site1.pos) - np.array(site2.pos))
+    vec = np.array(np.array(site2.pos) - np.array(site1.pos))
     rho, theta, phi = spherical_coord_general(*vec)
-
     tx = np.sin(theta)*np.cos(phi) * np.kron(tau_x, sigma_x)
     ty = np.sin(theta)*np.sin(phi) * np.kron(tau_x, sigma_y)
     tz = np.cos(theta) * np.kron(tau_x, sigma_z)
     t0 = 1j*kron(tau_z, sigma_0)
 
-
     rescaled_distance = (rho - bond_lengthscale) / bond_lengthscale
     hopping_multiplier = np.exp(- rescaled_distance * bond_power)
-
+    # print(vec,np.round((-1j*(lambdaJ/2)*(tx + ty + tz + t0)) * hopping_multiplier, 5))
+    # print(vec, hopping_multiplier)
     return (-1j*(lambdaJ/2)*(tx + ty + tz + t0)) * hopping_multiplier
 
 

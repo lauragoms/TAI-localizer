@@ -1,4 +1,11 @@
-from .functions import Amorphous, polar_coords, bonds_func
+from .functions import (
+    Amorphous,
+    polar_coords,
+    bonds_func,
+    sigma_0,
+    sigma_x,
+    sigma_y,
+    sigma_z)
 
 import numpy as np
 import kwant
@@ -24,16 +31,6 @@ params = dict(
 )
 
 """helper functions"""
-
-
-def zero_params(system):
-    return {parameter: 0 for parameter in system.parameters}
-
-
-sigma_0 = np.eye(2)
-sigma_x = np.array([[0, 1], [1, 0]])
-sigma_y = np.array([[0, -1j], [1j, 0]])
-sigma_z = np.array([[1, 0], [0, -1]])
 
 
 def onsite(
