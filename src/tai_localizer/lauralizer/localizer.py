@@ -1,16 +1,23 @@
-
+from .functions import (
+    _fast_pfaffian,
+    eigsh,
+    find_dos_gap,
+    sigma_x,
+    sigma_y,
+    sigma_z,
+    sigma_0
+    )
 
 import numpy as np
-from numpy import einsum
 import scipy.sparse as sp
 import kwant
 import mumps
 ctx = mumps.Context()
 
-from .functions import _fast_pfaffian, eigsh, find_dos_gap, sigma_x, sigma_y, sigma_z, sigma_0
 
 sigma_01 = sp.csr_matrix(([1], ([0], [1])), shape=(2, 2))
 sigma_10 = sp.csr_matrix(([1], ([1], [0])), shape=(2, 2))
+
 
 def spectral_localizer_AII2D(
     positions: list,
@@ -19,8 +26,8 @@ def spectral_localizer_AII2D(
     kappa: float,
     norbs: int = 4,
     rotated: bool = True,
-    X0 = None,
-    time_reversal_operator = None,
+    X0=None,
+    time_reversal_operator=None,
 ) -> sp.csr_matrix:
     """
     Spectral Localizer for class AII2D
@@ -156,9 +163,9 @@ def sign_det(matrix: sp.csr_matrix):
     return np.real(ctx.slogdet(matrix, ordering="scotch")[0])
 
 
-def local_gap_localizer(localizer: sp.csr_matrix):
-    local_gap = eigsh(localizer, k=1, sigma=0)
-    return np.abs(local_gap)
+def local_gap_localizer(localizer: sp.csr_matrix, k=1, **kwargs):
+    local_gap = eigsh(localizer, k=k, sigma=0, **kwargs)
+    return local_gap
 
 
 def dos_kpm(L: sp.csr_matrix,

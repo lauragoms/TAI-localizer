@@ -12,7 +12,7 @@ import mumps
 from scipy import spatial
 import copy
 
-# import pfapack.ctypes as cpf
+import pfapack.ctypes as cpf
 import ctypes
 
 ctx = mumps.Context()  # Provided by python-mumps package
