@@ -133,14 +133,13 @@ def spectral_localizer_AII3D(
         ) - (z0) * sp.eye(ham.shape[0])
 
     D = (
-        sp.kron(X, sigma_x)
-        + sp.kron(Y, sigma_y)
-        + sp.kron(Z, sigma_z)
+        sp.kron(sigma_x, X)
+        + sp.kron(sigma_y, Y)
+        + sp.kron(sigma_z, Z)
     )
     # print(sp.kron(Z, sigma_z))
 
-    h = sp.kron((ham - E0 * sp.eye(ham.shape[0])), sigma_0)
-    print(x0,y0,z0)
+    h = sp.kron(sigma_0, (ham - E0 * sp.eye(ham.shape[0])))
     # Block of Localizer, just need this for Z2
     block_1 = h + 1j * kappa * D
 
