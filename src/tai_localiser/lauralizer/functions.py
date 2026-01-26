@@ -4,8 +4,6 @@ import numpy as np
 import scipy.sparse as sp
 from scipy.linalg import qr
 import kwant
-
-import time
 import sys
 
 import mumps
@@ -16,6 +14,7 @@ import pfapack.ctypes as cpf
 import ctypes
 
 ctx = mumps.Context()  # Provided by python-mumps package
+
 
 def zero_params(system):
     return {parameter: 0 for parameter in system.parameters}
@@ -150,14 +149,6 @@ def eigsh(
     return evals, evecs
 
 
-params = dict(
-    kappa=0.1, 
-    W=0, 
-    num_reals=50, 
-    maxiter=2000, 
-    tol_locgap=1e-6, 
-)
-
 """Defining Pauli matrices"""
 sigma_0 = np.array([[1, 0], [0, 1]])
 sigma_x = np.array([[0, 1], [1, 0]])
@@ -165,239 +156,6 @@ sigma_y = np.array([[0, -1j], [1j, 0]])
 sigma_z = np.array([[1, 0], [0, -1]])
 sigma_01 = sp.csr_matrix(([1], ([0], [1])), shape=(2, 2))
 sigma_10 = sp.csr_matrix(([1], ([1], [0])), shape=(2, 2))
-
-
-"""Spectral Localizer 3D model"""
-
-
-def sparse_pos_H(fsyst_sites, H, ton, coord=0):
-    """Calculate the position operator in the 'coord' direction of the
-    Hamiltonian of fsyst. It also computes the position operator for a given
-    position with index=index_origin in fsyst.sites.
-    """
-
-    diag_values = np.zeros(H.shape[0])
-    ind = 0
-    for i in range(len(fsyst_sites)):
-        for j in range(ind, ind + int(ton)):
-            diag_values[j] = fsyst_sites[i].pos[coord]
-        ind += int(ton)
-
-    x_sparse = sp.diags(diag_values, format="csr")
-
-    return x_sparse
-
-
-def find_dos_gap(energies, dos, threshold=0.05):
-    """
-    Find the energy of the first significant peak starting from zero energy.
-    Returns the energy distance from zero to the first peak above threshold.
-    """
-    # Find energy closest to zero
-    zero_idx = len(energies) // 2
-
-    # Filter out very small DOS values that might be numerical noise
-    # significant_dos = dos/np.max(dos) > threshold
-    significant_dos = dos > threshold  # the input is already normalized
-
-    if not np.any(significant_dos):
-        return np.inf  # No significant peaks found
-
-    # Find all significant peak indices
-    significant_indices = np.where(significant_dos)[0]
-
-    # Calculate distances from zero energy index to all significant peaks
-    distances_to_zero = np.abs(significant_indices - zero_idx)
-
-    # Find the closest significant peak to zero
-    closest_peak_relative_idx = np.argmin(distances_to_zero)
-    closest_peak_idx = significant_indices[closest_peak_relative_idx]
-
-    # Return the energy of this closest peak (absolute energy value)
-    return np.abs(energies[closest_peak_idx])
-
-
-def sparse_spectral_localizer_AII3D(
-    ham,
-    fsyst_sites,
-    W,
-    E0,
-    kappa,
-    X0=np.array(["None"]),
-    num_reals=50,
-    maxiter=2000,
-    compute_inv=True,
-    compute_DOS=False,
-    compute_localgap=False,
-):
-    """
-    Computes the sparse spectral localizer for any type of disorder
-
-    Parameters
-    ----------------
-    ham : sparse Hamiltonian matrix of the system
-    fsyst_sites : list of sites of the system
-    W : Anderson disorder strength
-    E0 : energy at which we compute the localizer
-    X0 : position origin
-
-    Returns
-    ----------------
-    compute_inv = True : invariant_average,list_invariant_realizations
-    compute_DOS = True : energy_subset, density_subset_average
-    compute_localgap = True : localgap_average,list_localgap_realizations"""
-
-    if X0[0] == "None":
-        X0 = get_center(fsyst_sites)
-        
-    print(
-        "DISORDER. W:",
-        W,
-        " & num_reals:",
-        num_reals,
-    )
-
-    print("LOCALIZER. kappa: ", kappa,
-                        ", E0: ", E0,
-                        ", X0:", X0, 
-                        ", maxiter:", maxiter)
-
-    norbs = ham.shape[0] / len(fsyst_sites)
-    # Now we define position operators centered in X0 for crystalline:
-    x0, y0, z0 = X0
-    X = sparse_pos_H(fsyst_sites, H=ham, ton=norbs, coord=0)
-    Y = sparse_pos_H(fsyst_sites, H=ham, ton=norbs, coord=1)
-    Z = sparse_pos_H(fsyst_sites, H=ham, ton=norbs, coord=2)
-
-    # print(len(fsyst_sites),X.shape,ham.shape)
-    id = sp.eye(np.shape(X)[0])
-
-    # We define D as the following:
-    D = (
-        sp.kron(X - x0 * id, sigma_x)
-        + sp.kron(Y - y0 * id, sigma_y)
-        + sp.kron(Z - z0 * id, sigma_z)
-    )
-
-    list_invariant_realizations = []
-    invariant_realization = 0
-    list_localgap_realizations = []
-    localgap_realization = 0
-    density_subset_realizations = np.zeros(200, dtype=np.complex128)
-
-    if W == 0:
-        num_reals = 1
-
-    seed_range = np.arange(num_reals)
-
-    for ind, val in enumerate(seed_range):
-
-        print("Averaging over realizations...")
-
-        update_progress((ind + 1) / len(seed_range))
-        seed = val
-        np.random.seed(seed)
-        print("seed W:", seed)
-
-        # ANDERSON'S DISORDER
-        if W != 0:
-            disp = sp.diags(
-                np.random.uniform(
-                    low=-W / 2, 
-                    high=W / 2, 
-                    size=len(fsyst_sites))
-            )
-            AND_disorder = sp.kron(disp, sp.eye(norbs))
-
-        if W == 0:
-            h = ham
-        else:
-            h = ham + AND_disorder
-
-        # Total Hamiltonian
-        H = sp.kron(h - E0 * id, sigma_0)
-
-        # Block of Localizer
-        block_1 = H + 1j * kappa * D
-
-        # Compute the determinant with mumps
-        if compute_inv is True:
-            # invariant = find_signature(H+1j*kappa*D)
-
-            invariant = np.real(ctx.slogdet(block_1, ordering="scotch")[0])
-
-            invariant_realization = invariant_realization + invariant
-            print("Invariant realization:", invariant)
-            list_invariant_realizations.append(invariant)
-
-        # Compute the local gap with mumps
-        if compute_localgap is True:
-            L_sparse = (sp.kron(sigma_01, block_1)
-                        + sp.kron(sigma_10, block_1.getH()))
-            start_time2 = time.perf_counter()
-            local_gap = eigsh(L_sparse, k=1, sigma=0)
-            print("Local gap realization:", local_gap)
-            end_time2 = time.perf_counter()
-            print("Time:", end_time2 - start_time2)
-
-            localgap_realization = localgap_realization + np.abs(local_gap)
-            list_localgap_realizations.append(np.abs(local_gap))
-
-        # Compute the Density of States of the Localizer with KPM
-        if compute_DOS is True:
-            start_time2 = time.perf_counter()
-            bounds = (-1, 1)
-            es = np.linspace(*bounds, 200)
-            L_sparse = (sp.kron(sigma_01, block_1)
-                        + sp.kron(sigma_10, block_1.getH()))
-            # L_sparse = block_1
-            # print(L_sparse.shape[0])
-            spectrum = kwant.kpm.SpectralDensity(hamiltonian=L_sparse)
-            spectrum.add_moments(energy_resolution=0.01)
-            energy_subset = es
-            density_subset = spectrum(energy_subset)
-            DOS = np.real(density_subset) / np.max(np.real(density_subset))
-            density_subset_realizations += np.array(DOS)
-            # You get local gap for free!
-            # print(len(DOS),DOS)
-            localgap = find_dos_gap(energy_subset, DOS)
-            localgap_realization += localgap
-            list_localgap_realizations.append(localgap)
-            end_time2 = time.perf_counter()
-            print("Time:", end_time2 - start_time2)
-
-    # We average over all realizations
-
-    invariant_average = invariant_realization / num_reals
-    localgap_average = localgap_realization / num_reals
-    density_subset_average = density_subset_realizations / num_reals
-
-    if compute_inv is True:
-        print("Invariant:", invariant_average)
-        return invariant_average, list_invariant_realizations
-
-    if compute_DOS is True:
-        return (
-            energy_subset,
-            density_subset_average,
-            localgap_average,
-            list_localgap_realizations,
-        )
-
-    if compute_localgap is True:
-
-        print("Local gap:", np.abs(localgap_average[0]))
-        return localgap_average, list_localgap_realizations
-
-    if compute_inv is True and compute_localgap is True:
-        print("Invariant:", invariant_average)
-        print("Local gap:", np.abs(localgap_average[0]))
-        return (
-            invariant_average,
-            localgap_average,
-            list_invariant_realizations,
-            list_localgap_realizations,
-        )
 
 
 """Conductance"""
