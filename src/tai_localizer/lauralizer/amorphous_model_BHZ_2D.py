@@ -1,10 +1,15 @@
-import copy
+from .functions import (
+    Amorphous,
+    polar_coords,
+    bonds_func,
+    sigma_0,
+    sigma_x,
+    sigma_y,
+    sigma_z)
 
 import numpy as np
-from scipy import spatial
-from scipy import linalg as la
-
 import kwant
+
 
 params = dict(
     norbs=4,
@@ -26,36 +31,6 @@ params = dict(
 )
 
 """helper functions"""
-
-
-def zero_params(system):
-    return {parameter: 0 for parameter in system.parameters}
-
-
-sigma_0 = np.eye(2)
-sigma_x = np.array([[0, 1], [1, 0]])
-sigma_y = np.array([[0, -1j], [1j, 0]])
-sigma_z = np.array([[1, 0], [0, -1]])
-
-
-def polar_coords(x0, y0):
-    """Determines spherical coordinates of a point with
-    respect to 0.
-
-
-    Parameters
-    -----------------
-    x0, y0 : floats,
-        2D position of the point
-    Returns
-    ----------------
-    rho,  phi : floats,
-        spherical coordinates"""
-
-    rho = np.sqrt((x0) ** 2 + (y0) ** 2)
-
-    phi = np.sign(y0) * np.arccos(x0 / np.sqrt(x0**2 + y0**2))
-    return rho, phi
 
 
 def onsite(
@@ -85,15 +60,14 @@ def amorph_hopping(
     bond_power: float,
 ):
 
-    vec = np.array(site2.pos - site1.pos)
+    vec = np.array(np.array(site2.pos) - np.array(site1.pos))
     spin = sigma_z
 
     rho, phi = polar_coords(vec[0], vec[1])
-    
+
     hop_strength = B * np.kron(sigma_z, sigma_0)
     hop_x_SOC = np.cos(phi) * (A / (2j) * np.kron(sigma_x, spin))
     hop_y_SOC = -np.sin(phi) * A / (2j) * np.kron(sigma_y, sigma_0)
-
 
     rescaled_distance = (rho - bond_lengthscale) / bond_lengthscale
     hopping_multiplier = np.exp(- rescaled_distance * bond_power)
@@ -102,32 +76,6 @@ def amorph_hopping(
 
 
 """amorphous system"""
-
-
-class Amorphous(kwant.builder.SiteFamily):
-    """Creates a lattice from the positions of sites."""
-
-    def __init__(self, coords):
-        n = params["name"]
-        self.coords = coords
-        super(Amorphous, self).__init__(str(n + n), str(n), params["norbs"])
-
-    def normalize_tag(self, tag):
-        try:
-            tag = int(tag[0])
-        except:
-            raise KeyError
-        if 0 <= tag < len(self.coords):
-            return tag
-        else:
-            raise KeyError
-
-    def pos(self, tag):
-        return self.coords[tag]
-
-    def family(self):
-        n = params["name"]
-        return str(n)
 
 
 def Displacement_2D(sites: list, seed: int, sigma: float):
@@ -156,71 +104,12 @@ def Displacement_2D(sites: list, seed: int, sigma: float):
 
         x, y = sites[i][0], sites[i][1]
 
-        disp_x, disp_y = disp[2 * i : 2 * i + 2]
+        disp_x, disp_y = disp[2*i:2*i+2]
         x = x + disp_x
         y = y + disp_y
         disp_sites.append(np.array([x, y]))
 
     return disp_sites
-
-
-def bond_2D(lat: list, D=params["R"]):
-    """
-    Returns the bonds of the lattice.
-
-    Parameters
-    ------------
-    lat : list
-        List of sites in the lattice
-    D : float
-        Sites within a distance D will be connected
-
-    Returns
-    -----------
-    info_bond : list
-        List of tags of the bounded sites.
-    """
-
-    def distance(vec_1, vec_2):
-        vec_distance = vec_1 - vec_2
-        dist_size = np.sqrt(np.dot(vec_distance, vec_distance))
-        return vec_distance, dist_size
-
-    og_size = len(lat)  # how many sites in OBC
-
-    out = copy.deepcopy(lat)
-
-    tree = spatial.KDTree(
-        out
-    )  # This class provides an index into a set of k-dimensional points which
-    # can be used to rapidly look up the nearest neighbors of any point.
-    # Theta function in the hoppings
-    bonds = tree.query_ball_point(
-        x=lat, r=D
-    )  # find points in lat that are within distance r of out
-    info_bond = list()
-    info_bond2 = list()
-
-    for i, b in enumerate(bonds):
-        b = bonds[i]
-        b.remove(i)  # remove onsite
-        a = list()
-
-        for item in b:
-
-            new_index = item
-            if item >= og_size:  # not in OBC
-                new_index = (
-                    item - int(item / og_size) * og_size
-                )  # readjusts from a PBC copy to the index in the OBC
-
-            if i < new_index:
-                vec_dist, dist = distance(np.array(out[item]), np.array(out[i]))
-                info_bond.append([i, new_index, vec_dist])
-                info_bond2.append((i, new_index))
-                a.append(new_index)
-
-    return info_bond2
 
 
 def sites_bonds_generator(
@@ -234,7 +123,7 @@ def sites_bonds_generator(
     else:
         sites = koala
 
-    bonds = bond_2D(sites)
+    bonds = bonds_func(sites)
 
     return sites, bonds
 
