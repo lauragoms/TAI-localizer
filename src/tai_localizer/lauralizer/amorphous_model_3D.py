@@ -49,7 +49,7 @@ def onsite(
 def amorph_hopping(
         site1: kwant.builder.SiteFamily,
         site2: kwant.builder.SiteFamily,
-        lambdaJ: float,
+        A: float,
         bond_lengthscale: float,
         bond_power: float,
         ):
@@ -63,9 +63,9 @@ def amorph_hopping(
 
     rescaled_distance = (rho - bond_lengthscale) / bond_lengthscale
     hopping_multiplier = np.exp(- rescaled_distance * bond_power)
-    # print(vec,np.round((-1j*(lambdaJ/2)*(tx + ty + tz + t0)) * hopping_multiplier, 5))
+    # print(vec,np.round((-1j*(A/2)*(tx + ty + tz + t0)) * hopping_multiplier, 5))
     # print(vec, hopping_multiplier)
-    return (-1j*(lambdaJ/2)*(tx + ty + tz + t0)) * hopping_multiplier
+    return (-1j*(A/2)*(tx + ty + tz + t0)) * hopping_multiplier
 
 
 # sites = [(x,y,z) for x in range(-Lx,Lx) for y in range(-Ly,Ly) for z in range (-Lz,Lz)] 

@@ -35,7 +35,7 @@ def grid_3D(nx: int, ny: int, nz: int) -> np.ndarray:
 
 
 system_size = 5
-bond_distance = 1.01 / system_size
+bond_distance = 1.3 / system_size
 sites = grid_3D(system_size, system_size, system_size)
 bonds = bonds_func(sites, bond_distance)
 syst = amorph_3DTI(sites, bonds)
@@ -61,9 +61,9 @@ def test_topology():
     rng = np.random.default_rng()
     new_params = {
         'MJ': 2.3,
-        'lambdaJ': 1.0,
-        'bond_lengthscale': bond_distance,
-        'bond_power': bond_distance,
+        'A': 1.0,
+        'bond_lengthscale': 1/system_size,
+        'bond_power': 1/system_size,
         'dis_onsite': 0.0,
         'rng_W': rng,
     }
@@ -85,11 +85,11 @@ def test_topology():
             np.array(positions),
             ham,
             0,
-            0.9
+            kappa=2,
         )
-    z2_M.append(sign_det(L))
+        z2_M.append(sign_det(L))
     plt.plot(M_linspace, z2_M, '-o')
 
 
-test_hoppings()
+# test_hoppings()
 test_topology()

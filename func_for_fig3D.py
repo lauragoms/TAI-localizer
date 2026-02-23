@@ -1,6 +1,5 @@
 import numpy as np
 from tai_localizer.lauralizer.amorphous_model_3D import (
-    amorph_hopping,
     amorph_3DTI
     )
 from tai_localizer.lauralizer.functions import bonds_func
@@ -31,29 +30,48 @@ def grid_3D(nx: int, ny: int, nz: int) -> np.ndarray:
     g_out = np.reshape(np.meshgrid(pos_x, pos_y, pos_z), [3, -1]).T
     return g_out
 
+# sites = grid_3D(system_size, system_size, system_size)
+
 
 def params_obs_3D(
     MJ: float,
-    lambdaJ: float,
-    dis_onsite: float,
-    seed: float, 
+    A: float,
+    onsite_disorder: float,
+    seed: float,
+    sites,
+    kappa,
+    E0,
+    bond_distance: float,
+    bond_power: float,
+    bond_lengthscale: float,
 ):
 
-    system_size = 5
-    bond_distance = 1.01 / system_size
-    sites = grid_3D(system_size, system_size, system_size)
     bonds = bonds_func(sites, bond_distance)
     syst = amorph_3DTI(sites, bonds)
     sys_sites = syst.finalized().sites
     positions = [site.pos for site in sys_sites]
-    
+
     rng = np.random.default_rng(seed)
     new_params = {
         'MJ': MJ,
-        'lambdaJ': lambdaJ,
-        'bond_lengthscale': bond_distance,
-        'bond_power': bond_distance,
-        'dis_onsite': 0.0,
+        'A': A,
+        'bond_lengthscale': bond_lengthscale,
+        'bond_power': bond_power,
+        'dis_onsite': onsite_disorder,
         'rng_W': rng,
     }
 
+    ham = syst.finalized().hamiltonian_submatrix(
+        params=new_params,
+        sparse=True
+        )
+
+    L = spectral_localizer_AII3D(
+        np.array(positions),
+        ham,
+        E0=E0,
+        kappa=kappa,
+        norbs=4,
+        whole_localizer=False,
+    )
+    return sign_det(L)
