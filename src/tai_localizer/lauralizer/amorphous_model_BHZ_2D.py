@@ -61,13 +61,12 @@ def amorph_hopping(
 ):
 
     vec = np.array(np.array(site2.pos) - np.array(site1.pos))
-    spin = sigma_z
 
     rho, phi = polar_coords(vec[0], vec[1])
 
     hop_strength = B * np.kron(sigma_z, sigma_0)
-    hop_x_SOC = np.cos(phi) * (A / (2j) * np.kron(sigma_x, spin))
-    hop_y_SOC = -np.sin(phi) * A / (2j) * np.kron(sigma_y, sigma_0)
+    hop_x_SOC = np.cos(phi) * (A / (2j) * np.kron(sigma_x, sigma_x))
+    hop_y_SOC = -np.sin(phi) * A / (2j) * np.kron(sigma_x, sigma_y)
 
     rescaled_distance = (rho - bond_lengthscale) / bond_lengthscale
     hopping_multiplier = np.exp(- rescaled_distance * bond_power)

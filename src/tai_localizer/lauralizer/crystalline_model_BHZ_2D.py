@@ -1,6 +1,6 @@
 import numpy as np
 import kwant
-
+import warnings
 
 params = dict(
     norbs=4,
@@ -45,11 +45,15 @@ def hop_x(site1, site2, dis_hadamard, rng_hdmd, A, B):
         and rng_hdmd.choice([0, 1], p=[1 - dis_hadamard / 100, dis_hadamard / 100]) == 1
     ):
         spin = sigma_x
-
+    warnings.warn("we currently havent fixed this to the new basis.")
     return B * np.kron(sigma_z, sigma_0) + A / (2j) * np.kron(sigma_x, spin)
 
 
 def hop_y(site0, site1, A, B):
+    # raise warning that this code is not fixed
+
+    warnings.warn("we currently havent fixed this to the new basis.")
+
     return B * np.kron(sigma_z, sigma_0) - A / (2j) * np.kron(sigma_y, sigma_0)
 
 

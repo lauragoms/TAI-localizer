@@ -7,7 +7,7 @@ from copy import copy
 
 def _tx(A, B, alpha):
     b = B * np.kron(sigma_z, np.eye(2))
-    a = -1j * A / 2 * np.kron(sigma_x, sigma_z)
+    a = -1j * A / 2 * np.kron(sigma_x, sigma_x)
     alp = 1j * alpha / 2 * np.kron(np.eye(2), sigma_y)
 
     return a + b + alp
@@ -15,8 +15,8 @@ def _tx(A, B, alpha):
 
 def _ty(A, B, alpha):
     b = B * np.kron(sigma_z, np.eye(2))
-    a = 1j * A / 2 * np.kron(sigma_y, np.eye(2))
-    alp = -1j * alpha / 2 * np.kron(sigma_z, sigma_x)
+    a = 1j * A / 2 * np.kron(sigma_x, sigma_y)
+    alp = -1j * alpha / 2 * np.kron(np.eye(2), sigma_x)
 
     return a + b + alp
 
@@ -24,10 +24,10 @@ def _ty(A, B, alpha):
 def _t_theta(A, B, alpha, theta):
 
     b = B * np.kron(sigma_z, np.eye(2))
-    a_x = -1j * A / 2 * np.kron(sigma_x, sigma_z)
+    a_x = -1j * A / 2 * np.kron(sigma_x, sigma_x)
     alp_x = 1j * alpha / 2 * np.kron(np.eye(2), sigma_y)
-    a_y = 1j * A / 2 * np.kron(sigma_y, np.eye(2))
-    alp_y = -1j * alpha / 2 * np.kron(sigma_z, sigma_x)
+    a_y = 1j * A / 2 * np.kron(sigma_x, sigma_y)
+    alp_y = -1j * alpha / 2 * np.kron(np.eye(2), sigma_x)
 
     return b + np.cos(theta) * (a_x + alp_x) + np.sin(theta) * (a_y + alp_y)
 
