@@ -1,10 +1,10 @@
 import scipy.sparse as sp
 import numpy as np
-from tai_localizer.lauralizer.amorphous_model_3D import (
+from tai_localiser.lauralizer.amorphous_model_3D import (
     amorph_3DTI
     )
-from tai_localizer.lauralizer.functions import bonds_func
-from tai_localizer.lauralizer.localizer import (
+from tai_localiser.lauralizer.functions import bonds_func
+from tai_localiser.lauralizer.localizer import (
     spectral_localizer_AII3D,
     sign_det
     )
