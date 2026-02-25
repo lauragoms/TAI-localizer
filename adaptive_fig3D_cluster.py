@@ -4,9 +4,6 @@ from mpi4py.futures import MPIPoolExecutor
 from mpi4py import MPI
 
 
-comm = MPI.COMM_WORLD
-print(f"Rank {comm.Get_rank()} / {comm.Get_size()}", flush=True)
-
 MJ_bounds = (0, 4)
 disorder_bounds = (0, 12)
 num_realizations = 100
