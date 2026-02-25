@@ -41,12 +41,14 @@ def f(dis_MJ):
     )
 
 
-learner_dis = adaptive.Learner2D(
-    f,
-    bounds=[MJ_bounds, disorder_bounds],
-)
 
 if __name__ == "__main__":
+    fname = "data_fig3D_cluster.pkl"
+    learner_dis = adaptive.Learner2D(
+        f,
+        bounds=[MJ_bounds, disorder_bounds],
+    )
+    # learner_dis.load(fname)
 
     runner_dis = adaptive.Runner(
         learner_dis,
@@ -55,5 +57,11 @@ if __name__ == "__main__":
         shutdown_executor=True,
     )
 
-    runner_dis.live_info()
+    # periodically save the data (in case the job dies)
+    runner_dis.start_periodic_saving(dict(fname=fname), interval=600)
+
+    # block until runner_dis goal reached
     runner_dis.block_until_done()
+
+    # save one final time before exiting
+    learner_dis.save(fname)

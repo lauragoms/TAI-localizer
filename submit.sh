@@ -8,10 +8,8 @@
 #SBATCH --error=adaptive_%j.err
 
 module purge
-module load gompi/2022b
-module load mpi4py/3.1.4-gompi-2022b
-module load Miniforge3   # si existe como módulo separado
+module load Miniforge3  
+source $(conda info --base)/etc/profile.d/conda.sh
+conda activate /home/grushin/.conda/envs/peru_env
 
-source ~/peru_env/bin/activate
-
-srun -n $SLURM_NTASKS python -m mpi4py.futures adaptive_fig3D_cluster.py
+srun -n $SLURM_NTASKS /home/grushin/.conda/envs/peru_env/bin/python -m mpi4py.futures adaptive_fig3D_cluster.py
