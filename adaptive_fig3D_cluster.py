@@ -43,7 +43,7 @@ def f(dis_MJ):
 
 
 if __name__ == "__main__":
-    fname = "data_fig3D_cluster.pkl"
+    fname = "data_fig3D_cluster_mpiexec.pkl"
     learner_dis = adaptive.Learner2D(
         f,
         bounds=[MJ_bounds, disorder_bounds],
@@ -52,13 +52,13 @@ if __name__ == "__main__":
 
     runner_dis = adaptive.Runner(
         learner_dis,
-        goal=goal,
         executor=MPIPoolExecutor(),
         shutdown_executor=True,
+        goal=goal,
     )
 
     # periodically save the data (in case the job dies)
-    runner_dis.start_periodic_saving(dict(fname=fname), interval=600)
+    runner_dis.start_periodic_saving(dict(fname=fname), interval=300)
 
     # block until runner_dis goal reached
     runner_dis.block_until_done()
