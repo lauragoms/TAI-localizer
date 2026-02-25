@@ -12,5 +12,5 @@ module load Miniforge3
 source $(conda info --base)/etc/profile.d/conda.sh
 conda activate /home/grushin/.conda/envs/peru_env
 
-## mpiexec -n 10 /home/grushin/.conda/envs/peru_env/bin/python -m mpi4py.futures adaptive_fig3D_cluster.py
-srun -n $SLURM_NTASKS --mpi=pmi2 /home/grushin/.conda/envs/peru_env/bin/python -m mpi4py.futures adaptive_fig3D_cluster.py
+### mpiexec -n 10 /home/grushin/.conda/envs/peru_env/bin/python -m mpi4py.futures adaptive_fig3D_cluster.py
+srun -n $SLURM_NTASKS --mpi=pmi2 /home/grushin/.conda/envs/peru_env/bin/python adaptive_fig3D_cluster.py
