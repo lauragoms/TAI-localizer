@@ -1,0 +1,6 @@
+--------------------------------------------------------------------------
+WARNING: There was an error initializing an OpenFabrics device.
+
+  Local host:   cb01
+  Local device: mlx4_0
+--------------------------------------------------------------------------
