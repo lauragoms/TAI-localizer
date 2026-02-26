@@ -48,6 +48,7 @@ def params_obs_3D(
     sigma: float,
     kappa_shift: float,
     beta: float,
+    **kwargs,
 ):
     # create lattice
     sites = grid_3D(system_size, system_size, system_size)
@@ -92,5 +93,5 @@ def params_obs_3D(
             norbs=4,
             whole_localizer=False,
         )
-        idx_W.append(sign_det(L))
+        idx_W.append(sign_det(L, **kwargs))
     return np.mean(np.array(idx_W))
