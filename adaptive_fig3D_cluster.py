@@ -3,6 +3,8 @@ from func_for_fig3D import params_obs_3D
 from mpi4py.futures import MPIPoolExecutor
 from mpi4py import MPI
 
+comm = MPI.COMM_WORLD
+print(comm.Get_rank(), comm.Get_size())
 
 MJ_bounds = (0, 4)
 disorder_bounds = (0, 12)
