@@ -1,6 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=adaptive_disorder
 #SBATCH --ntasks=10
+#SBATCH --cpus-per-task=1
 #SBATCH --time=5:00:00
 #SBATCH --partition=short
 #SBATCH --output=adaptive_%j.out
