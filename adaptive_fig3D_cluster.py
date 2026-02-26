@@ -28,21 +28,21 @@ def f(dis_MJ):
     # localizer params
     kappa = 2
     E0 = 0
-
-    return params_obs_3D(
-        system_size=system_size,
-        MJ=dis_MJ[0],
-        A=A,
-        onsite_disorder=dis_MJ[1],
-        disorder_average=num_realizations,
-        bond_lengthscale=bond_lengthscale,
-        bond_power=bond_power,
-        kappa_spec=kappa,
-        E0=E0,
-        sigma=0.,
-        kappa_shift=0,
-        beta=1,
-    )
+    return dis_MJ[0] + dis_MJ[1]  # dummy function to test the adaptive sampling framework
+    # return params_obs_3D(
+        # system_size=system_size,
+        # MJ=dis_MJ[0],
+        # A=A,
+        # onsite_disorder=dis_MJ[1],
+        # disorder_average=num_realizations,
+        # bond_lengthscale=bond_lengthscale,
+        # bond_power=bond_power,
+        # kappa_spec=kappa,
+        # E0=E0,
+        # sigma=0.,
+        # kappa_shift=0,
+        # beta=1,
+    # )
 
 
 
