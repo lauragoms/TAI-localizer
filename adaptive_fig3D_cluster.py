@@ -28,7 +28,7 @@ def sparse_diag(matrix, k, sigma, **kwargs):
     """
     class LuInv(sla.LinearOperator):
         def __init__(self, A):
-            inst = mumps.Context()
+            inst = mumps.Context(comm=MPI.COMM_SELF)
             inst.analyze(A, ordering='pord')
             inst.factor(A)
             self.solve = inst.solve
@@ -40,14 +40,16 @@ def sparse_diag(matrix, k, sigma, **kwargs):
     opinv = LuInv(matrix - sigma * identity(matrix.shape[0]))
     return sla.eigsh(matrix, k, sigma=sigma, OPinv=opinv, **kwargs)
 
+
 def mumps_test(A, B):
     matrix = sp.random(100, 100, density=0.01, format='csr') * A
     matrix += sp.eye(100) * B
-    evals, evecs =sparse_diag(matrix, k=10, sigma=0)
+    evals, evecs = sparse_diag(matrix, k=10, sigma=0)
     return evals[0] 
 
+
 def f(dis_MJ):
-    return mumps_test(A=dis_MJ[0], B= dis_MJ[1])
+    return mumps_test(A=dis_MJ[0], B=dis_MJ[1])
 
 # def f(dis_MJ):
 #     # lattice params
@@ -76,7 +78,6 @@ def f(dis_MJ):
 #         kappa_shift=0,
 #         beta=1,
 #     )
-
 
 
 if __name__ == "__main__":
