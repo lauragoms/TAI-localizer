@@ -23,7 +23,6 @@ def f(dis_MJ):
 
     # sys params
     A = 1
-    num_realizations = 1
     bond_lengthscale = 1 / system_size
     bond_power = 1 / system_size
 
