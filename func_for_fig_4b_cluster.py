@@ -43,6 +43,7 @@ def f(sigma_MJ):
         sigma=sigma_MJ[1],
         kappa_shift=0,
         beta=1,
+        provide_sites=False,
         comm=MPI.COMM_SELF,  # mumps parameter for multithreading
     )
 

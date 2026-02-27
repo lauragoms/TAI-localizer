@@ -60,7 +60,7 @@ def params_obs_3D(
     else:
         sites = kwargs['sites']
         bond_distance = 1.3 / system_size
-        
+
     # bonds
     bonds = bonds_func(sites, bond_distance)
 
