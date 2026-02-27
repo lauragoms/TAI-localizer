@@ -58,9 +58,9 @@ def params_obs_3D(
     idx_dis = []
 
     for seed in range(disorder_average):
-
+        rng = np.random.default_rng(seed)
         # structural disorder
-        sites = pointsets.move_all_points(sites, sigma, kappa_shift, beta)
+        sites = pointsets.move_all_points(sites, sigma, kappa_shift, beta, rng=rng)
 
         # create bonds
         bond_distance = 1.3 / system_size
@@ -79,7 +79,7 @@ def params_obs_3D(
             'bond_lengthscale': bond_lengthscale,
             'bond_power': bond_power,
             'dis_onsite': 0,  # we add disorder later to the Hamiltonian, so we set this to zero here
-            'rng_W': np.random.default_rng(),  # not used, but we need to provide it to create the system
+            'rng_W': rng,  # not used, but we need to provide it to create the system
         }
 
         ham = syst.finalized().hamiltonian_submatrix(
@@ -87,7 +87,6 @@ def params_obs_3D(
             sparse=True
             )
         # onsite disorder
-        rng = np.random.default_rng(seed)
         ham_W = ham + sp.diags(rng.uniform(
             -onsite_disorder/2, onsite_disorder/2, ham.shape[0]))
         # compute localizer and index
