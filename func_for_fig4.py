@@ -1,3 +1,4 @@
+import kwant
 import scipy.sparse as sp
 import numpy as np
 from tai_localiser.lauralizer.amorphous_model_3D import (
@@ -51,46 +52,45 @@ def params_obs_3D(
     provide_sites: bool,
     **kwargs,
 ):
-    if provide_sites is False:
-        # create lattice
-        sites = grid_3D(system_size, system_size, system_size)
-        bond_distance = 1.3 / system_size
-        # structural disorder if sigma!=0
+    # create lattice:
+    sites = grid_3D(system_size, system_size, system_size)
+
+    idx_dis = []
+
+    for seed in range(disorder_average):
+
+        # structural disorder
         sites = pointsets.move_all_points(sites, sigma, kappa_shift, beta)
-    else:
-        sites = kwargs['sites']
+
+        # create bonds
         bond_distance = 1.3 / system_size
+        bonds = bonds_func(sites, bond_distance)
 
-    # bonds
-    bonds = bonds_func(sites, bond_distance)
+        # create system
+        syst = amorph_3DTI(sites, bonds)
+        sys_sites = syst.finalized().sites
+        positions = [site.pos for site in sys_sites]
+        # kwant.plot(syst.finalized(), site_size=0.1, hop_lw=0.1)
 
-    # create system
-    syst = amorph_3DTI(sites, bonds)
-    sys_sites = syst.finalized().sites
-    positions = [site.pos for site in sys_sites]
-    rng = np.random.default_rng()
+        # create hamiltonian with system params
+        new_params = {
+            'MJ': MJ,
+            'A': A,
+            'bond_lengthscale': bond_lengthscale,
+            'bond_power': bond_power,
+            'dis_onsite': 0,  # we add disorder later to the Hamiltonian, so we set this to zero here
+            'rng_W': np.random.default_rng(),  # not used, but we need to provide it to create the system
+        }
 
-    # create hamiltonian
-    new_params = {
-        'MJ': MJ,
-        'A': A,
-        'bond_lengthscale': bond_lengthscale,
-        'bond_power': bond_power,
-        'dis_onsite': onsite_disorder,
-        'rng_W': rng,
-    }
-
-    ham = syst.finalized().hamiltonian_submatrix(
-        params=new_params,
-        sparse=True
-        )
-    # compute localizer
-    idx_W = []
-
-    for int in range(disorder_average):
-        rng = np.random.default_rng(int)
+        ham = syst.finalized().hamiltonian_submatrix(
+            params=new_params,
+            sparse=True
+            )
+        # onsite disorder
+        rng = np.random.default_rng(seed)
         ham_W = ham + sp.diags(rng.uniform(
             -onsite_disorder/2, onsite_disorder/2, ham.shape[0]))
+        # compute localizer and index
         L = spectral_localizer_AII3D(
             np.array(positions),
             ham_W,
@@ -99,5 +99,5 @@ def params_obs_3D(
             norbs=4,
             whole_localizer=False,
         )
-        idx_W.append(sign_det(L, **kwargs))
-    return np.mean(np.array(idx_W))
+        idx_dis.append(sign_det(L, **kwargs))
+    return np.mean(np.array(idx_dis))  # average over disorder realizations
