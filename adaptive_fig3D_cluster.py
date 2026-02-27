@@ -42,6 +42,7 @@ def f(dis_MJ):
         sigma=0.,
         kappa_shift=0,
         beta=1,
+	comm=MPI.COMM_SELF,
     )
 
 
