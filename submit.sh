@@ -14,4 +14,4 @@ source /home/lgomez/miniconda3/etc/profile.d/conda.sh
 conda activate peru_env
 
 export OMPI_MCA_btl=tcp,self
-mpiexec -np $SLURM_NTASKS python -m mpi4py.futures func_for_fig_4a_cluster.py
+mpiexec -np $SLURM_NTASKS python -m mpi4py.futures func_for_fig_4b_cluster.py
