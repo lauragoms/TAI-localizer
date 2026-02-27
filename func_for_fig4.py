@@ -48,15 +48,21 @@ def params_obs_3D(
     sigma: float,
     kappa_shift: float,
     beta: float,
+    provide_sites: bool,
     **kwargs,
 ):
-    # create lattice
-    sites = grid_3D(system_size, system_size, system_size)
-    bond_distance = 1.3 / system_size
+    if provide_sites is False:
+        # create lattice
+        sites = grid_3D(system_size, system_size, system_size)
+        bond_distance = 1.3 / system_size
+        # structural disorder if sigma!=0
+        sites = pointsets.move_all_points(sites, sigma, kappa_shift, beta)
+    else:
+        sites = kwargs['sites']
+        bond_distance = 1.3 / system_size
+        
+    # bonds
     bonds = bonds_func(sites, bond_distance)
-
-    # structural disorder if sigma!=0
-    sites = pointsets.move_all_points(sites, sigma, kappa_shift, beta)
 
     # create system
     syst = amorph_3DTI(sites, bonds)

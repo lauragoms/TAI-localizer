@@ -1,5 +1,6 @@
+# This file needs mumps 0.0.6 or later for comm variable to work
 import adaptive
-from func_for_fig3D import params_obs_3D
+from func_for_fig4 import params_obs_3D
 from mpi4py.futures import MPIPoolExecutor
 from mpi4py import MPI
 
@@ -27,7 +28,7 @@ def f(sigma_MJ):
     bond_power = 1 / system_size
 
     # localizer params
-    kappa = 2 
+    kappa = 2
     E0 = 0
     return params_obs_3D(
         system_size=system_size,
@@ -42,7 +43,7 @@ def f(sigma_MJ):
         sigma=sigma_MJ[1],
         kappa_shift=0,
         beta=1,
-        comm=MPI.COMM_SELF, # mumps parameter for multithreading
+        comm=MPI.COMM_SELF,  # mumps parameter for multithreading
     )
 
 
