@@ -60,7 +60,7 @@ def params_obs_3D(
     for seed in range(disorder_average):
         rng = np.random.default_rng(seed)
         # structural disorder
-        sites = pointsets.move_all_points(sites, sigma, kappa_shift, beta, rng=rng)
+        sites = pointsets.move_all_points(sites, sigma, kappa_shift, beta)
 
         # create bonds
         bond_distance = 1.3 / system_size
@@ -70,7 +70,7 @@ def params_obs_3D(
         syst = amorph_3DTI(sites, bonds)
         sys_sites = syst.finalized().sites
         positions = [site.pos for site in sys_sites]
-        # kwant.plot(syst.finalized(), site_size=0.1, hop_lw=0.1)
+        # kwant.plot(syst.finalized(), site_size=1, hop_lw=0.1)
 
         # create hamiltonian with system params
         new_params = {
