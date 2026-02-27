@@ -11,6 +11,22 @@ print(comm.Get_rank(), comm.Get_size())
 MJ_bounds = (0, 4)
 disorder_bounds = (0, 10)
 num_realizations = 100
+# lattice params
+system_size = 10
+
+# sys params
+A = 1
+bond_lengthscale = 1 / system_size
+bond_power = 1 / system_size
+
+# localizer params
+kappa = 2
+E0 = 0
+
+# structural disorder params
+sigma = 0
+kappa_shift = 0
+beta = 1
 
 
 def goal(ps):
@@ -18,17 +34,7 @@ def goal(ps):
 
 
 def f(dis_MJ):
-    # lattice params
-    system_size = 10
 
-    # sys params
-    A = 1
-    bond_lengthscale = 1 / system_size
-    bond_power = 1 / system_size
-
-    # localizer params
-    kappa = 2
-    E0 = 0
     return params_obs_3D(
         system_size=system_size,
         MJ=dis_MJ[0],
@@ -39,9 +45,9 @@ def f(dis_MJ):
         bond_power=bond_power,
         kappa_spec=kappa,
         E0=E0,
-        sigma=0.,
-        kappa_shift=0,
-        beta=1,
+        sigma=sigma,
+        kappa_shift=kappa_shift,
+        beta=beta,
         provide_sites=False,
         comm=MPI.COMM_SELF,  # mumps parameter for multithreading
     )

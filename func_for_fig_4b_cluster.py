@@ -13,6 +13,17 @@ MJ_bounds = (0, 4)
 system_size = 10
 sigma_bounds = (0, 0.15 / system_size)
 num_realizations = 100
+# sys params
+A = 1
+bond_lengthscale = 1 / system_size
+bond_power = 1 / system_size
+
+# localizer params
+kappa = 2
+E0 = 0
+# structural disorder params
+kappa_shift = 0
+beta = 1
 
 
 def goal(ps):
@@ -21,14 +32,6 @@ def goal(ps):
 
 def f(sigma_MJ):
 
-    # sys params
-    A = 1
-    bond_lengthscale = 1 / system_size
-    bond_power = 1 / system_size
-
-    # localizer params
-    kappa = 2
-    E0 = 0
     return params_obs_3D(
         system_size=system_size,
         MJ=sigma_MJ[0],
@@ -40,8 +43,8 @@ def f(sigma_MJ):
         kappa_spec=kappa,
         E0=E0,
         sigma=sigma_MJ[1],
-        kappa_shift=0,
-        beta=1,
+        kappa_shift=kappa_shift,
+        beta=beta,
         provide_sites=False,
         comm=MPI.COMM_SELF,  # mumps parameter for multithreading
     )

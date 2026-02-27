@@ -61,9 +61,7 @@ def params_obs_3D(
         rng = np.random.default_rng(seed)
         # structural disorder
         sites = pointsets.move_all_points(sites, sigma, kappa_shift, beta)
-        # save them naming the seed:
-        with open(f"sites_seed_{seed}.pkl", "wb") as f:
-            pi.dump(sites, f)
+
         # create bonds
         bond_distance = 1.3 / system_size
         bonds = bonds_func(sites, bond_distance)
