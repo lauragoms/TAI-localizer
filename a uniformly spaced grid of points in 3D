@@ -1,0 +1,485 @@
+[33mcommit a837800156b50e818cf974a27b1b9b1a37cb30f3[m[33m ([m[1;36mHEAD -> [m[1;32mfig3D[m[33m, [m[1;31morigin/fig3D[m[33m)[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Feb 27 13:05:06 2026 +0100
+
+    disorder average corrected
+
+[33mcommit 3d9d7e5c5c0ab5750e2699b2a016b7ca1b449376[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Feb 27 12:16:18 2026 +0100
+
+    results with bonds sigma=0.15
+
+[33mcommit 4123435c5c699d091bfccd65afe608cc8a9b75bb[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Feb 27 12:04:47 2026 +0100
+
+    good result for 4b with correct bonds
+
+[33mcommit 29277b6a91994b05e2c92bc5cab14467d4547c7d[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Feb 27 11:57:39 2026 +0100
+
+    fixed buf for provide_sites in cluster .py
+
+[33mcommit c2877ccbc72e177d20318f8c26d740c1995ef6fe[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Feb 27 11:55:30 2026 +0100
+
+    fixed bonds bug for sigma
+
+[33mcommit 92b0d0fc0f202a7fa8005ca2575b24c6ca62f5ba[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Feb 27 11:41:07 2026 +0100
+
+    results for fig4!
+
+[33mcommit 4216e36e8c0a2eeeef09692077ebe74fa4504e5d[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Feb 27 11:34:37 2026 +0100
+
+    final result fig4a
+
+[33mcommit 6cae39f14cf0f3d590d43d3131a65cf6e7b7cd5b[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Feb 27 11:29:47 2026 +0100
+
+    checkeverythingisfine
+
+[33mcommit e2aad210c9173a0770781d49aea471e5940705c1[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Feb 27 11:21:37 2026 +0100
+
+    ready for final running
+
+[33mcommit 740d0229994f2b2f80a8f64df66189788857404c[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Feb 27 11:05:16 2026 +0100
+
+    npoints
+
+[33mcommit 472f2f9911ef9d2735efbfd05da2c6d1844a56e9[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Feb 27 11:04:21 2026 +0100
+
+    firsttry
+
+[33mcommit b4db0e652febf2664a4cd9e5d94d897224cbd711[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Feb 27 10:20:21 2026 +0100
+
+    ready to run
+
+[33mcommit 7f11e92ecd4036c34e968e485c288b88e5fa3e90[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Feb 26 20:05:26 2026 +0100
+
+    testing mumps context
+
+[33mcommit bb2bd829ef626e5d5f2833b7ce6725bf7696d15b[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Feb 26 19:44:33 2026 +0100
+
+    remove
+
+[33mcommit c44e39b143216606bd712d567bc546a3b60d6c45[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Feb 26 19:35:53 2026 +0100
+
+    results_anton
+
+[33mcommit c1da8fe79b295b9a969a45d46dde212a012ccd1f[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Feb 26 17:06:21 2026 +0100
+
+    anton_solution
+
+[33mcommit 844c41cb77769562b224c27e5077a6d77c75219c[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Feb 26 15:34:59 2026 +0100
+
+    dummy function with mumps
+
+[33mcommit 73a86a7ff3d218c090e3220221dd735f32951858[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Feb 26 13:37:46 2026 +0100
+
+    change submit
+
+[33mcommit 731a6deae5141c8475162778a316a21b23cde7eb[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Feb 26 13:00:53 2026 +0100
+
+    check points with one node
+
+[33mcommit 9e70191db344afc5dd7a29cbeeaf5b5b2557eaa3[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Feb 26 11:50:36 2026 +0100
+
+    nps
+
+[33mcommit c9700787105fb3885a35fe5b0d25ee2cbd77daf1[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Feb 26 11:27:38 2026 +0100
+
+    npoints
+
+[33mcommit 1580cf54b788d9fe3ffc1228b08009179761659d[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Feb 26 11:27:38 2026 +0100
+
+    npoints
+
+[33mcommit 233a4ca871d4a7263a1511a98d56573b1e0192a6[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Feb 26 11:19:18 2026 +0100
+
+    checknpoints
+
+[33mcommit 4f622d484ca53bf761428c66db961fac2a2ac1db[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Feb 25 17:58:56 2026 +0100
+
+    idontknow
+
+[33mcommit f4c02938514bd972eab6f41c273e5b1115402be4[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Feb 25 17:24:45 2026 +0100
+
+    npoints
+
+[33mcommit 771cc8426ee42fbdfb6ee6412af1828c9b39a254[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Feb 25 17:15:22 2026 +0100
+
+    testing
+
+[33mcommit eed17e364e0af63be8de66d65ea6d8e86aeffa17[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Feb 25 16:56:12 2026 +0100
+
+    npoints
+
+[33mcommit 5c185ed8f1fcd1e57bd81d12a809dab5e57222cf[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Feb 25 16:50:27 2026 +0100
+
+    test-ntasks-10
+
+[33mcommit 6c7385821d345c7cb244d9419ecb7b2c15133d89[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Feb 25 13:24:19 2026 +0100
+
+    updt
+
+[33mcommit e89feeea198d85ffbf669f73a17ef781b2bc9075[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Feb 25 13:11:11 2026 +0100
+
+    asaptive
+
+[33mcommit 7fdf85f0ae190164a0e49214ddcc0c3820457720[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Feb 25 11:34:37 2026 +0100
+
+    try cluster
+
+[33mcommit 235a9097d8d513a2c2bf71ab6e7ffc725ebb4ca6[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Feb 25 11:23:52 2026 +0100
+
+    adaptive with mpipoolexecutor
+
+[33mcommit 73c2b887bebe42277c86ce73da052055b86b0312[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Feb 25 11:18:44 2026 +0100
+
+    notebook crashes
+
+[33mcommit 3d20481343dc62314c863e1cf14e6038c08542d8[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Tue Feb 24 13:29:59 2026 +0100
+
+    tai localiSEr
+
+[33mcommit 4a7f0110195741191bdecbecf1056823226e29c9[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Tue Feb 24 11:17:52 2026 +0100
+
+    dis avg added
+
+[33mcommit 08829dc17aa85d198fd51b4f818e4b605e51d31e[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Mon Feb 23 17:13:22 2026 +0100
+
+    fig3d adaptive
+
+[33mcommit 84b66879194230c57de01cb3cb00e103b363583c[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Mon Feb 23 15:19:56 2026 +0100
+
+    fig3D
+
+[33mcommit 086b4de7751cd66f323eab3a15f773ed4d599cfc[m[33m ([m[1;32mmain[m[33m)[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Thu Feb 19 11:54:01 2026 +0100
+
+    added a bunch of final figures
+
+[33mcommit f69df3d1f370bf5a9e91b2a0430ca4decfb46942[m
+Merge: 7085bcf f82fc92
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Thu Feb 19 11:53:01 2026 +0100
+
+    Merge branch 'main' of https://github.com/lauragoms/TAI-localizer
+    
+    oh dear
+
+[33mcommit 7085bcf26d5352d816a4a150f7479a75ef610c74[m[33m ([m[1;31morigin/change_bott_def[m[33m)[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Mon Feb 16 14:38:44 2026 +0100
+
+    fig 1 and 2 working
+
+[33mcommit f82fc925be3a62e908e2d9e666aff171b717522d[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Mon Jan 26 11:10:28 2026 +0100
+
+    Merge with make-3D-amorphsyst
+
+[33mcommit 90d9515739ab729474c4dd7eb847f3cb4b4e4098[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Sat Dec 27 20:37:24 2025 +0100
+
+    getting plots perfect
+
+[33mcommit 57be37b94085a1e38b3fe75e196acfe237ba57a3[m[33m ([m[1;31morigin/bond_length_disorder[m[33m)[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Fri Dec 19 16:53:38 2025 +0100
+
+    fig_2 official
+
+[33mcommit 54664b429e43a65a9350e81d66f55114419cb72f[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Fri Dec 19 10:48:01 2025 +0100
+
+    got fig 2
+
+[33mcommit 5f95ad91615b6b729d7b8fd7f23e477897cee9c5[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Thu Dec 18 09:58:15 2025 +0100
+
+    little refactor of file structure
+
+[33mcommit 094c895da62dcaa75161670c5d71a10b4d01625d[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Fri Dec 12 12:44:47 2025 +0100
+
+    got all working for fig 1
+
+[33mcommit b707749ad9e166c730374bb02117fff737f4825e[m[33m ([m[1;31morigin/make_figs[m[33m)[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Thu Dec 11 21:30:18 2025 +0100
+
+    got fig_2 working
+
+[33mcommit c2f40c78055700ef374ae2ba318a87fede875d97[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Thu Dec 11 16:16:00 2025 +0100
+
+    got fig 1 working <3
+
+[33mcommit 02b589e57a630096f06379aaba8e9e5978681312[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Dec 11 15:49:18 2025 +0100
+
+    fig 2
+
+[33mcommit 490f767e94bec9f33085c421b26fe26fe758d6e0[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Dec 10 15:06:32 2025 +0100
+
+    :art:
+
+[33mcommit 6d73308899cf58e17365b473247f0a17a3951f3d[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Mon Dec 8 17:08:45 2025 +0100
+
+    nothing
+
+[33mcommit 0192cd1efa63eef3ed6abf142aac3311cac29890[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Mon Dec 8 13:18:16 2025 +0100
+
+    assert TR
+
+[33mcommit 54719710498472c5085ca9696e83ff38a19275d5[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Dec 5 18:06:14 2025 +0100
+
+    la vida nos sonrie, clean localizer implemented
+
+[33mcommit 9c8666d48db7e7468e468a0fecd6ead27038b611[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Dec 5 17:48:41 2025 +0100
+
+    stupidity
+
+[33mcommit dd82d220240d2764ee5d1900d1cde0ede56b001f[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Fri Dec 5 16:00:05 2025 +0100
+
+    ooh dear
+
+[33mcommit a5737b5b63587c988777d72c5848277f2fee9a55[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Fri Dec 5 14:04:39 2025 +0100
+
+    about to merge
+
+[33mcommit 410dee25ddc82288cff7a705ab096340411b00c4[m[33m ([m[1;31morigin/make_package[m[33m)[m
+Merge: e88304c 869ce4d
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Fri Dec 5 14:01:34 2025 +0100
+
+    Merge branch 'make_package' of https://github.com/lauragoms/TAI-localizer into make_package
+     we fucked up
+
+[33mcommit e88304ca48b0e87fc372c75ab2260492aef8a4f1[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Fri Dec 5 13:57:20 2025 +0100
+
+    adaptive_example
+
+[33mcommit 869ce4da9a2e952aec84090fde4fd73c6ab1392e[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Dec 5 11:41:09 2025 +0100
+
+    :bug: fixed vec thing
+
+[33mcommit 2a5aec513cce428ee963c2ee5935307c7b3cf168[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Dec 4 18:05:03 2025 +0100
+
+    :sparkles: functions added to lauralizer, as well as koala lattoce generator
+
+[33mcommit 35b9e64e2cc9ba84be2fe1ece40fc0c67371cb95[m
+Merge: f8eec43 73cc6c4
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Dec 3 11:32:43 2025 +0100
+
+    merged some edits
+
+[33mcommit f8eec438f813c67866b70d4977b086dae38503bb[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Dec 3 11:31:52 2025 +0100
+
+    added tdo
+
+[33mcommit 73cc6c49c483c98d31efc85b5928e8e495607c07[m[33m ([m[1;31morigin/correct-params[m[33m)[m
+Author: Laura Gomez <lauragoms@gmail.com>
+Date:   Tue Dec 2 16:19:40 2025 +0100
+
+    params implemented
+
+[33mcommit 3779eee9a798c923c7a357ceeea4bb2d6cf83d23[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Tue Dec 2 12:51:22 2025 +0100
+
+    packaged up the peru stuff
+
+[33mcommit 54764521eb6cfedf6c0e73c19d389a3335fea624[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Mon Dec 1 12:21:41 2025 +0100
+
+    rebuilding all as a package
+
+[33mcommit f594176f82d2b63ffa9c37dd33037e346b5bd4b2[m
+Author: dpreuo <49160657+dpreuo@users.noreply.github.com>
+Date:   Fri Nov 28 14:18:07 2025 +0100
+
+    add gitignore
+
+[33mcommit ecdaec96cdcce634f852821197efc1b46948c1b3[m
+Author: Laura Gomez <lauragoms@gmail.com>
+Date:   Fri Nov 28 14:07:20 2025 +0100
+
+    :memo:
+
+[33mcommit e65dd6c20cc223791c3cb3978c6f5fa2db0ec756[m
+Author: Laura Gomez <lauragoms@gmail.com>
+Date:   Mon Nov 24 18:03:03 2025 +0100
+
+    :sparkles:  amorph BHZ implemented
+
+[33mcommit 987119d53a5a15bce64a7a50f4784f728bba694d[m
+Author: Laura Gomez <lauragoms@gmail.com>
+Date:   Fri Nov 21 13:11:36 2025 +0100
+
+    :memo:
+
+[33mcommit f3b70d5b909673a3f5888840e5d7b8c518db44a5[m
+Author: Laura Gomez <lauragoms@gmail.com>
+Date:   Wed Nov 19 12:49:00 2025 +0100
+
+    :bug:
+
+[33mcommit 0c5866c233c09d793fb16e93987d990abbe51111[m
+Author: Laura Gomez <lauragoms@gmail.com>
+Date:   Wed Nov 19 11:20:21 2025 +0100
+
+    :memo:
+
+[33mcommit 3b44a6a44566adc889007113cfdb148b8a0b8e50[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Tue Nov 18 16:45:59 2025 +0100
+
+    :sparkles: spin disorder
+
+[33mcommit e7d8f19edd12f9b5804bd6d3ffa6a4a1cb0f161c[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Nov 14 16:31:11 2025 +0100
+
+    :memo:
+
+[33mcommit fcd7205ec4599bed5cb6bdede8357d00fdeb7a1c[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Nov 14 15:55:59 2025 +0100
+
+    :memo: mand hadamard
+
+[33mcommit 36d0cbf9c7728a462d5e6cd94af6dba7ee7d72bf[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Fri Nov 14 11:44:20 2025 +0100
+
+    :memo:
+
+[33mcommit 8931dd218815f64a3b518fed594a8c1ad8f5ceaf[m
+Author: Laura Gomez <lauragoms@gmail.com>
+Date:   Thu Nov 13 18:23:02 2025 +0100
+
+    :memo:
+
+[33mcommit 36fd55983c776579f51b52d63224f98e322ce3c3[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Thu Nov 13 13:13:49 2025 +0100
+
+    :memo: results
+
+[33mcommit 2176045c25228d49d02dbe4b3971d60594a2ca5b[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Nov 12 17:40:19 2025 +0100
+
+    :sparkles:
+
+[33mcommit 27af9eca64b204313a40b7287225224f7aff5839[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Nov 12 13:37:59 2025 +0100
+
+    :sparkles: added functions bhz cubic
+
+[33mcommit f5c1973dd0bb8085e188be916be9aa400477480b[m
+Author: lauragoms <lauragoms@gmail.com>
+Date:   Wed Nov 12 11:09:21 2025 +0100
+
+    first commit

@@ -9,7 +9,7 @@ comm = MPI.COMM_WORLD
 print(comm.Get_rank(), comm.Get_size())
 
 MJ_bounds = (0, 4)
-disorder_bounds = (0, 12)
+disorder_bounds = (0, 10)
 num_realizations = 100
 
 
