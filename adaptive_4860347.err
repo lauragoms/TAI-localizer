@@ -1,0 +1,14 @@
+
+==============================================================================
+                        Miniforge3 Environment Loaded
+==============================================================================
+  Activated environment: miniforge3-base
+                                                                              
+  NOTE: This is a custom minimal environment.
+        We recommend creating your own conda environments for your
+        projects.
+                                                                              
+  More info: https://scc.dipc.org/docs/programming/languages/python/
+==============================================================================
+
+[2026-02-27T22:18:34.022] error: *** JOB 4860347 ON hyperion-009 CANCELLED AT 2026-02-27T22:18:34 DUE TO TIME LIMIT ***

@@ -1,17 +1,20 @@
 #!/bin/bash
 #SBATCH --job-name=adaptive_disorder
-#SBATCH --ntasks=50
+#SBATCH --ntasks=200
 #SBATCH --cpus-per-task=1
 ##SBATCH --mem=100G
-#SBATCH --time=5:00:00
-#SBATCH --partition=short
+#SBATCH --time=12:00:00
+#SBATCH --partition=general
+#SBATCH --qos=regular
 #SBATCH --output=adaptive_%j.out
 #SBATCH --error=adaptive_%j.err
 
 module purge
-module load MPI/GCC/8.3.1/openmpi-4.2.1
-source /home/lgomez/miniconda3/etc/profile.d/conda.sh
+module load OpenMPI/4.1.4-GCC-11.3.0
+module load Miniforge3
+
+source $(conda info --base)/etc/profile.d/conda.sh
 conda activate peru_env
 
 export OMPI_MCA_btl=tcp,self
-mpiexec -np $SLURM_NTASKS python -m mpi4py.futures func_for_fig_4b_cluster.py
+mpiexec -np $SLURM_NTASKS ~/.conda/envs/peru_env/bin/python -m mpi4py.futures func_for_fig_4a_cluster.py
