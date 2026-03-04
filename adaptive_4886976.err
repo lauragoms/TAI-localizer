@@ -11,15 +11,23 @@
   More info: https://scc.dipc.org/docs/programming/languages/python/
 ==============================================================================
 
-[2026-02-27T22:29:08.199] error: *** JOB 4860411 ON hyperion-089 CANCELLED AT 2026-02-27T22:29:08 DUE TO TIME LIMIT ***
 --------------------------------------------------------------------------
 ORTE has lost communication with a remote daemon.
 
-  HNP daemon   : [[26742,0],0] on node hyperion-089
-  Remote daemon: [[26742,0],5] on node hyperion-094
+  HNP daemon   : [[21893,0],0] on node hyperion-001
+  Remote daemon: [[21893,0],10] on node hyperion-068
 
 This is usually due to either a failure of the TCP network
 connection to the node, or possibly an internal failure of
 the daemon itself. We cannot recover from this failure, and
 therefore will terminate the job.
 --------------------------------------------------------------------------
+--------------------------------------------------------------------------
+An ORTE daemon has unexpectedly failed after launch and before
+communicating back to mpirun. This could be caused by a number
+of factors, including an inability to create a connection back
+to mpirun due to a lack of common network interfaces and/or no
+route found between them. Please check network connectivity
+(including firewalls and network routing requirements).
+--------------------------------------------------------------------------
+[2026-03-03T21:39:25.015] error: *** JOB 4886976 ON hyperion-001 CANCELLED AT 2026-03-03T21:39:25 DUE TO TIME LIMIT ***

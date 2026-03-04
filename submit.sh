@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=adaptive_disorder
-#SBATCH --ntasks=200
+#SBATCH --ntasks=300
 #SBATCH --cpus-per-task=1
 ##SBATCH --mem=100G
 #SBATCH --time=12:00:00
@@ -17,4 +17,4 @@ source $(conda info --base)/etc/profile.d/conda.sh
 conda activate peru_env
 
 export OMPI_MCA_btl=tcp,self
-mpiexec -np $SLURM_NTASKS ~/.conda/envs/peru_env/bin/python -m mpi4py.futures func_for_fig_4a_cluster.py
+mpiexec -np $SLURM_NTASKS ~/.conda/envs/peru_env/bin/python -m mpi4py.futures func_for_fig_4b_cluster.py
