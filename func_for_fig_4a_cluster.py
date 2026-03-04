@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     runner_dis = adaptive.Runner(
         learner_dis,
-        executor=MPIPoolExecutor(max_workers=comm.Get_size()),
+        executor=MPIPoolExecutor(),
         shutdown_executor=True,
         goal=goal,
     )
