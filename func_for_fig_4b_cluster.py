@@ -12,7 +12,7 @@ MJ_bounds = (0, 4)
 # lattice params
 system_size = 10
 sigma_bounds = (0, 0.05 / system_size)
-num_realizations = 30
+num_realizations = 10
 # sys params
 A = 1
 bond_lengthscale = 1 / system_size
