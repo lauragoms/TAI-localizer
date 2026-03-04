@@ -10,7 +10,7 @@ print(comm.Get_rank(), comm.Get_size())
 
 MJ_bounds = (0, 4)
 disorder_bounds = (0, 10)
-num_realizations = 100
+num_realizations = 30
 # lattice params
 system_size = 10
 
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     )
 
     # periodically save the data (in case the job dies)
-    runner_dis.start_periodic_saving(dict(fname=fname), interval=300)
+    runner_dis.start_periodic_saving(dict(fname=fname), interval=60)
 
     # block until runner_dis goal reached
     runner_dis.block_until_done()
