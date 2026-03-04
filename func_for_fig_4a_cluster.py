@@ -54,7 +54,7 @@ def f(dis_MJ):
 
 
 if __name__ == "__main__":
-    fname = "data_fig4a.pkl"
+    fname = "data_fig4a30reals.pkl"
     learner_dis = adaptive.Learner2D(
         f,
         bounds=[MJ_bounds, disorder_bounds],
