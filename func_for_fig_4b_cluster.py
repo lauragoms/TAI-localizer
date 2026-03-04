@@ -27,7 +27,7 @@ beta = 1
 
 
 def goal(ps):
-    return ps.npoints > 5000
+    return ps.npoints > 100
 
 
 def f(sigma_MJ):
@@ -61,6 +61,7 @@ if __name__ == "__main__":
     runner_dis = adaptive.Runner(
         learner_dis,
         executor=MPIPoolExecutor(max_workers=comm.Get_size()-1),
+        ntasks=comm.Get_size()-1,
         shutdown_executor=True,
         goal=goal,
     )
