@@ -12,7 +12,7 @@ MJ_bounds = (0, 4)
 # lattice params
 system_size = 10
 sigma_bounds = (0, 0.05 / system_size)
-num_realizations = 100
+num_realizations = 10
 # sys params
 A = 1
 bond_lengthscale = 1 / system_size
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         f,
         bounds=[MJ_bounds, sigma_bounds],
     )
-    # learner_dis.load(fname)
+    learner_dis.load(fname)
 
     runner_dis = adaptive.Runner(
         learner_dis,

@@ -1,40 +1,30 @@
-# This file needs mumps 0.0.6 or later for comm variable to work
+from mpi4py import MPI
+from mpi4py.futures import MPIPoolExecutor
 import adaptive
 from func_for_fig4 import params_obs_3D
-from mpi4py.futures import MPIPoolExecutor
-from mpi4py import MPI
-
 
 comm = MPI.COMM_WORLD
-print(comm.Get_rank(), comm.Get_size())
+rank = comm.Get_rank()
+size = comm.Get_size()
 
 MJ_bounds = (0, 4)
 disorder_bounds = (0, 10)
 num_realizations = 30
-# lattice params
 system_size = 10
-
-# sys params
 A = 1
 bond_lengthscale = 1 / system_size
 bond_power = 1 / system_size
-
-# localizer params
 kappa = 2
 E0 = 0
-
-# structural disorder params
 sigma = 0
 kappa_shift = 0
 beta = 1
-
+fname = "data_fig4a30reals.pkl"
 
 def goal(ps):
     return ps.npoints > 5000
 
-
 def f(dis_MJ):
-
     return params_obs_3D(
         system_size=system_size,
         MJ=dis_MJ[0],
@@ -49,30 +39,20 @@ def f(dis_MJ):
         kappa_shift=kappa_shift,
         beta=beta,
         provide_sites=False,
-        comm=MPI.COMM_SELF,  # mumps parameter for multithreading
+        comm=MPI.COMM_SELF,
     )
 
+if rank == 0:
+    # Driver
+    learner_dis = adaptive.Learner2D(f, bounds=[MJ_bounds, disorder_bounds])
 
-if __name__ == "__main__":
-    fname = "data_fig4a30reals.pkl"
-    learner_dis = adaptive.Learner2D(
-        f,
-        bounds=[MJ_bounds, disorder_bounds],
-    )
-    # learner_dis.load(fname)
-
-    runner_dis = adaptive.Runner(
-        learner_dis,
-        executor=MPIPoolExecutor(),
-        shutdown_executor=True,
-        goal=goal,
-    )
-
-    # periodically save the data (in case the job dies)
-    runner_dis.start_periodic_saving(dict(fname=fname), interval=60)
-
-    # block until runner_dis goal reached
-    runner_dis.block_until_done()
-
-    # save one final time before exiting
-    learner_dis.save(fname)
+    # Executor: todos los demás procesos serán automáticamente workers
+    with MPIPoolExecutor(max_workers=size-1) as executor:
+        runner_dis = adaptive.Runner(
+            learner_dis,
+            executor=executor,
+            goal=goal
+        )
+        runner_dis.start_periodic_saving(dict(fname=fname), interval=60)
+        runner_dis.block_until_done()
+        learner_dis.save(fname)
