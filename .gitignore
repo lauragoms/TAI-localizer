@@ -158,6 +158,7 @@ paper_pdfs*
 *.lot
 *.fls
 *.out
+*.err
 *.toc
 *.fmt
 *.fot

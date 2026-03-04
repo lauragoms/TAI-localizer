@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=adaptive_disorder
-#SBATCH --ntasks=30
+#SBATCH --ntasks=100
 #SBATCH --cpus-per-task=1
 ##SBATCH --mem=100G
 #SBATCH --time=12:00:00
