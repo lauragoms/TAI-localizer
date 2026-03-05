@@ -49,6 +49,7 @@ def params_obs_3D(
     sigma: float,
     kappa_shift: float,
     beta: float,
+    resolution: int,
     provide_sites: bool,
     **kwargs,
 ):
@@ -60,7 +61,7 @@ def params_obs_3D(
     for seed in range(disorder_average):
         rng = np.random.default_rng(seed)
         # structural disorder
-        sites = pointsets.move_all_points(sites, sigma, kappa_shift, beta)
+        sites = pointsets.move_all_points(sites, sigma, kappa_shift, beta, resolution=resolution)
 
         # create bonds
         bond_distance = 1.3 / system_size
