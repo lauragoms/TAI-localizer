@@ -12,7 +12,7 @@ import numpy as np
 import scipy.sparse as sp
 import kwant
 import mumps
-ctx = mumps.Context()
+
 
 
 sigma_01 = sp.csr_matrix(([1], ([0], [1])), shape=(2, 2))
@@ -148,7 +148,7 @@ def spectral_localizer_AII3D(
 
     h = sp.kron(sigma_0, (ham - E0 * sp.eye(ham.shape[0])))
     # Block of Localizer, just need this for Z2
-    block_1 = h + 1j * kappa * D
+    block_1 = h - 1j * kappa * D
 
     if whole_localizer:
         localizer = (
@@ -159,7 +159,8 @@ def spectral_localizer_AII3D(
     return localizer if whole_localizer else block_1
 
 
-def sign_det(matrix: sp.csr_matrix):
+def sign_det(matrix: sp.csr_matrix, **kwargs):
+    ctx = mumps.Context(**kwargs)
     return np.real(ctx.slogdet(matrix, ordering="scotch")[0])
 
 

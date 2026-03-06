@@ -492,8 +492,7 @@ def bonds_func(
     D: float
 ):
 
-    """ Return bonds in 3D lattice
-
+    """ Return bonds in any dimension
     Parameters:
     ----------
     lat : list
