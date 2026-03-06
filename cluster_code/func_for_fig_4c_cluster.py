@@ -9,18 +9,22 @@ comm = MPI.COMM_WORLD
 print(comm.Get_rank(), comm.Get_size())
 
 MJ_bounds = (0, 4)
+
 # lattice params
 system_size = 10
 sigma_bounds = (0, 0.05 / system_size)
 num_realizations = 100
+
 # sys params
 A = 1
 bond_lengthscale = 1 / system_size
 bond_power = 1 / system_size
+onsite_disorder = 0
 
 # localizer params
 kappa = 2
 E0 = 0
+
 # structural disorder params
 kappa_shift = 0.3
 beta = 1
@@ -37,7 +41,7 @@ def f(sigma_MJ):
         system_size=system_size,
         MJ=sigma_MJ[0],
         A=A,
-        onsite_disorder=0,
+        onsite_disorder=onsite_disorder,
         disorder_average=num_realizations,
         bond_lengthscale=bond_lengthscale,
         bond_power=bond_power,

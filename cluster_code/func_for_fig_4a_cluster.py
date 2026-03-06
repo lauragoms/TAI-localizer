@@ -8,11 +8,14 @@ from mpi4py import MPI
 comm = MPI.COMM_WORLD
 print(comm.Get_rank(), comm.Get_size())
 
+# computation params
 MJ_bounds = (0, 4)
+disorder_bounds = (0, 10)
+num_realizations = 100
+
 # lattice params
 system_size = 10
-sigma_bounds = (0, 0.05 / system_size)
-num_realizations = 100
+
 # sys params
 A = 1
 bond_lengthscale = 1 / system_size
@@ -22,6 +25,7 @@ bond_power = 1 / system_size
 kappa = 2
 E0 = 0
 # structural disorder params
+sigma = 0
 kappa_shift = 0
 beta = 1
 resolution = 10
@@ -31,31 +35,30 @@ def goal(ps):
     return ps.npoints > 5000
 
 
-def f(sigma_MJ):
-
+def f(dis_MJ):
     return params_obs_3D(
         system_size=system_size,
-        MJ=sigma_MJ[0],
+        MJ=dis_MJ[0],
         A=A,
-        onsite_disorder=0,
+        onsite_disorder=dis_MJ[1],
         disorder_average=num_realizations,
         bond_lengthscale=bond_lengthscale,
         bond_power=bond_power,
         kappa_spec=kappa,
         E0=E0,
-        sigma=sigma_MJ[1],
+        sigma=sigma,
         kappa_shift=kappa_shift,
         beta=beta,
         resolution=resolution,
-        comm=MPI.COMM_SELF,  # mumps parameter for multithreading
+        comm=MPI.COMM_SELF,
     )
 
 
 if __name__ == "__main__":
-    fname = "data_fig4b.pkl"
+    fname = "data_fig4a.pkl"
     learner_dis = adaptive.Learner2D(
         f,
-        bounds=[MJ_bounds, sigma_bounds],
+        bounds=[MJ_bounds, disorder_bounds],
     )
     learner_dis.load(fname)
 
