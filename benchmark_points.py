@@ -13,14 +13,14 @@ def _():
 
     import adaptive
 
-    from tai_localizer.lauralizer import amorphous_model_BHZ_2D as am
-    from tai_localizer.lauralizer.amorphous_model_BHZ_2D import amorph_BHZ
-    from tai_localizer.lauralizer.localizer import (
+    from tai_localiser.lauralizer import amorphous_model_BHZ_2D as am
+    from tai_localiser.lauralizer.amorphous_model_BHZ_2D import amorph_BHZ
+    from tai_localiser.lauralizer.localizer import (
         spectral_localizer_AII2D,
         pfaff_sign,
         local_gap_localizer,
     )
-    from tai_localizer.perulizer import proximity_lattice, proximity_bonds
+    from tai_localiser.perulizer import proximity_lattice, proximity_bonds
 
     from koala.lattice import Lattice
     from koala import pointsets

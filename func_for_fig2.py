@@ -5,7 +5,7 @@ from koala import pointsets
 from koala import graph_utils as gu
 
 
-from tai_localizer.perulizer import (
+from tai_localiser.perulizer import (
     proximity_bonds,
     randomly_rotate,
     sigma_y,
@@ -15,8 +15,8 @@ from tai_localizer.perulizer import (
     z2_spec_loc,
 )
 
-from tai_localizer.lauralizer.amorphous_model_BHZ_2D import amorph_BHZ
-from tai_localizer.lauralizer.localizer import (
+from tai_localiser.lauralizer.amorphous_model_BHZ_2D import amorph_BHZ
+from tai_localiser.lauralizer.localizer import (
     spectral_localizer_AII2D,
     pfaff_sign,
 )

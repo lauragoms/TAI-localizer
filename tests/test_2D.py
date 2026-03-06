@@ -1,6 +1,6 @@
 import numpy as np
-from tai_localizer.lauralizer.amorphous_model_BHZ_2D import amorph_hopping, amorph_BHZ
-from tai_localizer.lauralizer.functions import bonds_func
+from tai_localiser.lauralizer.amorphous_model_BHZ_2D import amorph_hopping, amorph_BHZ
+from tai_localiser.lauralizer.functions import bonds_func
 Lx = 3
 Ly = Lx
 

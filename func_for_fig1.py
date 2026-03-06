@@ -2,7 +2,7 @@ import numpy as np
 from scipy import linalg as la
 
 from koala import graph_utils as gu
-from tai_localizer.perulizer import (
+from tai_localiser.perulizer import (
     bhz_ham,
     z2_spec_loc,
     bhz_trs_operator,
