@@ -26,7 +26,6 @@ def params_obs_3D(
     kappa_shift: float,
     beta: float,
     resolution: int,
-    provide_sites: bool,
     **kwargs,
 ):
     # create lattice:
@@ -79,3 +78,4 @@ def params_obs_3D(
         )
         idx_dis.append(sign_det(L, **kwargs))
     return np.mean(np.array(idx_dis))  # average over disorder realizations
+
