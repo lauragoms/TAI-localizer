@@ -3,7 +3,7 @@
 #SBATCH --ntasks=200
 #SBATCH --cpus-per-task=1
 ##SBATCH --mem=100G
-#SBATCH --time=12:00:00
+#SBATCH --time=24:00:00
 #SBATCH --partition=general
 #SBATCH --qos=regular
 #SBATCH --output=adaptive_%j.out
@@ -19,4 +19,4 @@ source $(conda info --base)/etc/profile.d/conda.sh
 conda activate peru_env
 
 export OMPI_MCA_btl=tcp,self
-mpiexec -np $SLURM_NTASKS ~/.conda/envs/peru_env/bin/python -m mpi4py.futures func_for_fig_4b_cluster.py
+mpiexec -np $SLURM_NTASKS ~/.conda/envs/peru_env/bin/python -m mpi4py.futures func_for_fig_4c_cluster.py

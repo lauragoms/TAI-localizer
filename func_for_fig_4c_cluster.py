@@ -53,7 +53,7 @@ def f(sigma_MJ):
 
 
 if __name__ == "__main__":
-    fname = "data_fig4b.pkl"
+    fname = "data_fig4c.pkl"
     learner_dis = adaptive.Learner2D(
         f,
         bounds=[MJ_bounds, sigma_bounds],
