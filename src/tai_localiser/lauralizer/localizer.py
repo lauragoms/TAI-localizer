@@ -1,7 +1,7 @@
 from .functions import (
     _fast_pfaffian,
     eigsh,
-    find_dos_gap,
+    # find_dos_gap,
     sigma_x,
     sigma_y,
     sigma_z,
@@ -167,6 +167,35 @@ def sign_det(matrix: sp.csr_matrix, **kwargs):
 def local_gap_localizer(localizer: sp.csr_matrix, k=1, **kwargs):
     local_gap = eigsh(localizer, k=k, sigma=0, **kwargs)
     return local_gap
+
+
+def find_dos_gap(energies, dos, threshold=0.05):
+    """
+    Find the energy of the first significant peak starting from zero energy.
+    Returns the energy distance from zero to the first peak above threshold.
+    """
+    # Find energy closest to zero
+    zero_idx = len(energies) // 2
+
+    # Filter out very small DOS values that might be numerical noise
+    # significant_dos = dos/np.max(dos) > threshold
+    significant_dos = dos > threshold  # the input is already normalized
+
+    if not np.any(significant_dos):
+        return np.inf  # No significant peaks found
+
+    # Find all significant peak indices
+    significant_indices = np.where(significant_dos)[0]
+
+    # Calculate distances from zero energy index to all significant peaks
+    distances_to_zero = np.abs(significant_indices - zero_idx)
+
+    # Find the closest significant peak to zero
+    closest_peak_relative_idx = np.argmin(distances_to_zero)
+    closest_peak_idx = significant_indices[closest_peak_relative_idx]
+
+    # Return the energy of this closest peak (absolute energy value)
+    return np.abs(energies[closest_peak_idx])
 
 
 def dos_kpm(L: sp.csr_matrix,
