@@ -24,6 +24,7 @@ E0 = 0
 # structural disorder params
 kappa_shift = 0
 beta = 1
+resolution = 10
 
 
 def goal(ps):
@@ -45,7 +46,7 @@ def f(sigma_MJ):
         sigma=sigma_MJ[1],
         kappa_shift=kappa_shift,
         beta=beta,
-        provide_sites=False,
+        resolution=resolution,
         comm=MPI.COMM_SELF,  # mumps parameter for multithreading
     )
 
