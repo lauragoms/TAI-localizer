@@ -34,7 +34,7 @@ def grid_3D(nx: int, ny: int, nz: int) -> np.ndarray:
     return g_out
 
 
-system_size = 5
+system_size = 15
 bond_distance = 1.01 / system_size
 sites = grid_3D(system_size, system_size, system_size)
 bonds = bonds_func(sites, bond_distance)
@@ -47,11 +47,11 @@ def test_hoppings():
     site1 = sys_sites[0]
     site2 = sys_sites[1]
 
-    lambdaJ = 1
+    A = 1
     bond_lengthscale = 1.0 / 3
     bond_power = 1.0
-    t = amorph_hopping(site1, site2, lambdaJ, bond_lengthscale, bond_power)
-    t2 = amorph_hopping(site2, site1, lambdaJ, bond_lengthscale, bond_power)
+    t = amorph_hopping(site1, site2, A, bond_lengthscale, bond_power)
+    t2 = amorph_hopping(site2, site1, A, bond_lengthscale, bond_power)
 
     assert np.allclose(t.conj().T, t2), "Hopping is not Hermitian!"
 
@@ -61,7 +61,7 @@ def test_topology():
     rng = np.random.default_rng()
     new_params = {
         'MJ': 2.3,
-        'lambdaJ': 1.0,
+        'A': 1.0,
         'bond_lengthscale': bond_distance,
         'bond_power': bond_distance,
         'dis_onsite': 0.0,
@@ -85,9 +85,9 @@ def test_topology():
             np.array(positions),
             ham,
             0,
-            0.9
+            2,
         )
-    z2_M.append(sign_det(L))
+        z2_M.append(sign_det(L))
     plt.plot(M_linspace, z2_M, '-o')
 
 
