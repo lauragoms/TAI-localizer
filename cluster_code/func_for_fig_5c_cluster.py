@@ -1,6 +1,6 @@
 # This file needs mumps 0.0.6 or later for comm variable to work
 import adaptive
-from func_for_fig4 import params_obs_3D
+from func_for_fig5 import params_obs_3D
 from mpi4py.futures import MPIPoolExecutor
 from mpi4py import MPI
 
@@ -9,20 +9,24 @@ comm = MPI.COMM_WORLD
 print(comm.Get_rank(), comm.Get_size())
 
 MJ_bounds = (0, 4)
+
 # lattice params
 system_size = 10
 sigma_bounds = (0, 0.05 / system_size)
 num_realizations = 100
+
 # sys params
 A = 1
 bond_lengthscale = 1 / system_size
 bond_power = 1 / system_size
 onsite_disorder = 0
+
 # localizer params
 kappa = 2
 E0 = 0
+
 # structural disorder params
-kappa_shift = 0
+kappa_shift = 0.3
 beta = 1
 resolution = 10
 
@@ -52,7 +56,7 @@ def f(sigma_MJ):
 
 
 if __name__ == "__main__":
-    fname = "data_fig4b.pkl"
+    fname = "data_fig5c.pkl"
     learner_dis = adaptive.Learner2D(
         f,
         bounds=[MJ_bounds, sigma_bounds],

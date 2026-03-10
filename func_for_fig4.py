@@ -1,81 +1,142 @@
-import scipy.sparse as sp
 import numpy as np
-from tai_localiser.lauralizer.amorphous_model_3D import (
-    amorph_3DTI
-    )
-from tai_localiser.lauralizer.functions import bonds_func
-from tai_localiser.lauralizer.localizer import (
-    spectral_localizer_AII3D,
-    sign_det
-    )
+import scipy.sparse as sp
+
 from koala import pointsets
-from koala.pointsets import grid
+from koala import graph_utils as gu
 
 
-def params_obs_3D(
-    MJ: float,
-    A: float,
-    onsite_disorder: float,
-    disorder_average: int,
+from tai_localiser.perulizer import (
+    proximity_bonds,
+    randomly_rotate,
+    sigma_y,
+    proximity_lattice,
+    bhz_ham,
+    bhz_trs_operator,
+    z2_spec_loc,
+)
+
+from tai_localiser.lauralizer.amorphous_model_BHZ_2D import amorph_BHZ
+from tai_localiser.lauralizer.localizer import (
+    spectral_localizer_AII2D,
+    pfaff_sign,
+)
+
+
+def param_obs_2d_benchmark_peru(
     system_size: int,
-    kappa_spec,
-    E0,
-    bond_power: float,
-    bond_lengthscale: float,
+    sigma: float,
+    bond_distance: float,
+    A: float,
+    B: float,
+    Delta: float,
+    onsite_disorder: float,
+    alpha: float = 0,
+    hadamard_disorder: float = 0,
+    kappa=1,
+    disorder_average=1,
+    beta=5,
+    **kwargs
+) -> tuple:
+
+    # make the points
+    rng = np.random.default_rng()
+    points = pointsets.grid(system_size, system_size)
+
+    s_list = np.zeros(disorder_average)
+    for j in range(disorder_average):
+        points = pointsets.move_all_points(points, sigma, sigma, beta)
+        lattice = proximity_lattice(points, bond_distance)
+        lattice = gu.cut_boundaries(lattice)
+
+        ws = (rng.random(lattice.n_vertices) * 2 - 1) * onsite_disorder / 2
+        wp = (rng.random(lattice.n_vertices) * 2 - 1) * onsite_disorder / 2
+        ham_params = (
+            A,
+            B,
+            alpha,
+            Delta,
+            ws,
+            wp,
+        )
+        hamiltonian = bhz_ham(lattice, *ham_params, **kwargs)
+        spec_loc = z2_spec_loc(lattice, hamiltonian, 0, bhz_trs_operator)
+        s_list[j] = spec_loc
+    return np.average(s_list)
+
+
+def param_obs_2b(
+    system_size: int,
     sigma: float,
     kappa_shift: float,
-    beta: float,
-    resolution: int,
-    **kwargs,
-):
-    # create lattice:
-    sites = grid(system_size, system_size, system_size)
+    bond_distance: float,
+    A: float,
+    B: float,
+    Delta: float,
+    onsite_disorder: float,
+    hadamard_disorder: float = 0,
+    kappa_spec=1,
+    disorder_average=1,
+    beta=5,
+    bond_power=1,
+    bond_lengthscale=.1,
+) -> tuple:
 
-    idx_dis = []
+    # make the points
+    points = pointsets.grid(system_size, system_size)
 
-    for seed in range(disorder_average):
-        rng = np.random.default_rng(seed)
-        # structural disorder
-        sites = pointsets.move_all_points(
-            sites, sigma, kappa_shift, beta, resolution=resolution
+    loc_out = np.zeros(disorder_average)
+
+    for j in range(disorder_average):
+        rng = np.random.default_rng(int(j))
+        points = pointsets.move_all_points(
+            points, sigma, kappa_shift, beta, rng=rng
             )
 
-        # create bonds
-        bond_distance = 1.3 / system_size
-        bonds = bonds_func(sites, bond_distance)
+        # make the lattice
+        edges, c = proximity_bonds(points, bond_distance)
+        not_crossing = np.abs(c).sum(axis=1) == 0
+        edges = edges[not_crossing]  # get rid of boundary crossing bonds
 
-        # create system
-        syst = amorph_3DTI(sites, bonds)
-        sys_sites = syst.finalized().sites
-        positions = [site.pos for site in sys_sites]
-        # kwant.plot(syst.finalized(), site_size=1, hop_lw=0.1)
-
-        # create hamiltonian with system params
-        new_params = {
-            'MJ': MJ,
-            'A': A,
-            'bond_lengthscale': bond_lengthscale,
-            'bond_power': bond_power,
-            'dis_onsite': 0,  # we add disorder later to the Hamiltonian, so we set this to zero here
-            'rng_W': rng,  # not used, but we need to provide it to create the system
+        # hamiltonian parameters
+        parameters = {
+            "norbs": 4,
+            "rng_W": rng,
+            "Delta": Delta,
+            "A": A,
+            "B": B,
+            "dis_onsite": onsite_disorder,
+            "mu": 0,
+            "bond_lengthscale": bond_lengthscale,
+            "bond_power": bond_power,
         }
 
-        ham = syst.finalized().hamiltonian_submatrix(
-            params=new_params,
-            sparse=True
-            )
-        # onsite disorder
-        ham_W = ham + sp.diags(rng.uniform(
-            -onsite_disorder/2, onsite_disorder/2, ham.shape[0]))
-        # compute localizer and index
-        L = spectral_localizer_AII3D(
-            np.array(positions),
-            ham_W,
-            E0=E0,
-            kappa=kappa_spec,
-            norbs=4,
-            whole_localizer=False,
-        )
-        idx_dis.append(sign_det(L, **kwargs))
-    return np.mean(np.array(idx_dis))  # average over disorder realizations
+        # make the system in kwant
+        system = amorph_BHZ(points, edges)
+        fsyst = system.finalized()
+        ham = fsyst.hamiltonian_submatrix(params=parameters, sparse=True)
+        positions = [site.pos for site in fsyst.sites]
 
+        # add a rotation, note that you also have to rotate the time reversal operator
+        if hadamard_disorder > 0:
+            random_unitary = randomly_rotate(
+                len(positions), hadamard_disorder, sparse=True
+            )
+            ham = random_unitary.conj().T @ ham @ random_unitary
+            trs_operator = sp.kron(sp.eye(len(positions) * 2), sigma_y)
+            trs_operator = random_unitary @ trs_operator @ random_unitary.conj().T
+        else:
+            trs_operator = None
+
+        # compute localizer
+        loc_rotated = spectral_localizer_AII2D(
+            np.array(positions),
+            ham,
+            E0=0,
+            kappa=kappa_spec,
+            time_reversal_operator=trs_operator,
+        )
+
+        inv_localizer = pfaff_sign(loc_rotated.todense())
+
+        loc_out[j] = inv_localizer
+    return np.mean(loc_out)

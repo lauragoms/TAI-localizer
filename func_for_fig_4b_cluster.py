@@ -1,6 +1,6 @@
 # This file needs mumps 0.0.6 or later for comm variable to work
 import adaptive
-from func_for_fig4 import params_obs_3D
+from func_for_fig4 import param_obs_2b
 from mpi4py.futures import MPIPoolExecutor
 from mpi4py import MPI
 
@@ -8,57 +8,64 @@ from mpi4py import MPI
 comm = MPI.COMM_WORLD
 print(comm.Get_rank(), comm.Get_size())
 
-# computation params
-MJ_bounds = (0, 4)
-disorder_bounds = (0, 10)
-num_realizations = 100
-
-# lattice params
+# lattice parameters
 system_size = 10
+bond_distance = 1.3 / system_size
 
-# sys params
-A = 1
+# model parameters
+A = 1.0
+B = 1.0
+hadamard_disorder = 0.15
+bond_power = 1
 bond_lengthscale = 1 / system_size
-bond_power = 1 / system_size
 
-# localizer params
-kappa = 2
-E0 = 0
-# structural disorder params
-sigma = 0
-kappa_shift = 0
+# localiser parameter
+kappa = 1
+
+# disorder for fig b)
+onsite_disorder_b = 0
+kappa_shift_b = 0
 beta = 1
-resolution = 10
+
+# adaptive params
+sigma_bounds = (0.0, 0.1 / system_size)
+delta_bounds = (-2, 4)
+
+disorder_averages = 100
 
 
 def goal(ps):
     return ps.npoints > 5000
 
 
-def f(dis_MJ):
-    return params_obs_3D(
+def f(delta_sig):
+    return param_obs_2b(
         system_size=system_size,
-        MJ=dis_MJ[0],
+        sigma=delta_sig[1],
+        kappa_shift=kappa_shift_b,
+        bond_distance=bond_distance,
         A=A,
-        onsite_disorder=dis_MJ[1],
-        disorder_average=num_realizations,
-        bond_lengthscale=bond_lengthscale,
-        bond_power=bond_power,
+        B=B,
+        Delta=delta_sig[0],
+        onsite_disorder=onsite_disorder_b,
+        hadamard_disorder=hadamard_disorder,
         kappa_spec=kappa,
-        E0=E0,
-        sigma=sigma,
-        kappa_shift=kappa_shift,
+        disorder_average=disorder_averages,
         beta=beta,
-        resolution=resolution,
-        comm=MPI.COMM_SELF,
+        bond_power=bond_power,
+        bond_lengthscale=bond_lengthscale,
     )
 
 
 if __name__ == "__main__":
-    fname = "data_fig4a.pkl"
+
+    fname = "data_fig4b.pkl"
     learner_dis = adaptive.Learner2D(
         f,
-        bounds=[MJ_bounds, disorder_bounds],
+        bounds=[
+            delta_bounds,
+            sigma_bounds,
+        ],
     )
     learner_dis.load(fname)
 
