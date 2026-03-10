@@ -43,7 +43,7 @@ def _(pointsets):
     kappa = 0.3
     sigma = 0.1
 
-    pointsets.move_all_points(initial_points, sigma, kappa, beta,resolution = 10, verbose=True)
+    pointsets.move_all_points(initial_points, sigma, kappa, beta,resolution = 15, verbose=True)
     return
 
 
