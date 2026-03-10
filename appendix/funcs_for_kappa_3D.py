@@ -22,6 +22,7 @@ def localgap_sys_3D(
     E0: float,
     bond_power: float,
     bond_lengthscale: float,
+    bond_distance: float,
     sigma: float,
     kappa_shift: float,
     beta: float,
@@ -39,7 +40,6 @@ def localgap_sys_3D(
         )
 
     # create bonds
-    bond_distance = 1.3 / system_size
     bonds = bonds_func(sites, bond_distance)
 
     # create system
