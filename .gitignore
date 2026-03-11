@@ -157,6 +157,7 @@ paper_pdfs*
 *.log
 *.lot
 *.fls
+*.err
 *.out
 *.toc
 *.fmt

@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=adaptive_disorder_c
-#SBATCH --ntasks=200
+#SBATCH --job-name=bhz_c
+#SBATCH --ntasks=50
 #SBATCH --cpus-per-task=1
 ##SBATCH --mem=100G
 #SBATCH --time=24:00:00

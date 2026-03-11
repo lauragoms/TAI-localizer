@@ -57,7 +57,7 @@ if __name__ == "__main__":
         f,
         bounds=[MJ_bounds, sigma_bounds],
     )
-    learner_dis.load(fname)
+    # learner_dis.load(fname)
 
     runner_dis = adaptive.Runner(
         learner_dis,

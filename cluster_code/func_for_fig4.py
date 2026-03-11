@@ -109,7 +109,6 @@ def param_obs_2b(
             "bond_lengthscale": bond_lengthscale,
             "bond_power": bond_power,
         }
-
         # make the system in kwant
         system = amorph_BHZ(points, edges)
         fsyst = system.finalized()
@@ -126,6 +125,7 @@ def param_obs_2b(
             trs_operator = random_unitary @ trs_operator @ random_unitary.conj().T
         else:
             trs_operator = None
+
 
         # compute localizer
         loc_rotated = spectral_localizer_AII2D(

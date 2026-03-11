@@ -9,7 +9,7 @@ comm = MPI.COMM_WORLD
 print(comm.Get_rank(), comm.Get_size())
 
 # lattice parameters
-system_size = 10
+system_size = 30
 bond_distance = 1.3 / system_size
 
 # model parameters
@@ -58,7 +58,7 @@ def f(delta_dis):
 
 
 if __name__ == "__main__":
-
+    print('hey')
     fname = "data_fig4a.pkl"
     learner_dis = adaptive.Learner2D(
         f,
@@ -67,8 +67,7 @@ if __name__ == "__main__":
             disorder_bounds,
         ],
     )
-    learner_dis.load(fname)
-
+    # learner_dis.load(fname)
     runner_dis = adaptive.Runner(
         learner_dis,
         executor=MPIPoolExecutor(max_workers=comm.Get_size()-1),
