@@ -2,6 +2,7 @@
 #SBATCH --job-name=bhz_c
 #SBATCH --ntasks=50
 #SBATCH --cpus-per-task=1
+#SBATCH --mem-per-cpu=10G
 ##SBATCH --mem=100G
 #SBATCH --time=24:00:00
 #SBATCH --partition=general
