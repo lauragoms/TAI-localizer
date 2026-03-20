@@ -1,3 +1,5 @@
+import gc
+
 import numpy as np
 import scipy.sparse as sp
 
@@ -126,7 +128,6 @@ def param_obs_2b(
         else:
             trs_operator = None
 
-
         # compute localizer
         loc_rotated = spectral_localizer_AII2D(
             np.array(positions),
@@ -137,6 +138,8 @@ def param_obs_2b(
         )
 
         inv_localizer = pfaff_sign(loc_rotated.todense())
+        del loc_rotated
+        gc.collect()
 
         loc_out[j] = inv_localizer
-    return np.mean(loc_out)
+    return loc_out
