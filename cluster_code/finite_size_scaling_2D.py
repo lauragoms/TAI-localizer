@@ -20,7 +20,7 @@ if len(sys.argv) > 1:
 parname = 'sigma'
 
 # lattice parameters
-system_size = 30
+system_size = 20
 sigma = sigma / system_size  # adjust to system size
 bond_distance = 1.3 / system_size
 
@@ -116,7 +116,7 @@ try:
             bond_lengthscale=bond_lengthscale,
         )  # just one disorder realisation at a time
         z2.append(z2_seed)
-
+        print(z2_seed)
         if (seed + 1) % SAVE_EVERY == 0:
             checkpoint(z2)
             tqdm.write(
