@@ -20,7 +20,7 @@ if len(sys.argv) > 1:
 parname = 'sigma'
 
 # lattice parameters
-system_size = 20
+system_size = 30
 sigma = sigma / system_size  # adjust to system size
 bond_distance = 1.3 / system_size
 
@@ -107,6 +107,7 @@ try:
             B=B,
             Delta=Delta,
             onsite_disorder=W,
+            seed=seed,
             hadamard_disorder=hadamard_disorder,
             kappa_spec=kappa,
             disorder_average=1,  # we are averaging outside
