@@ -109,7 +109,7 @@ try:
             onsite_disorder=W,
             hadamard_disorder=hadamard_disorder,
             kappa_spec=kappa,
-            disorder_average=0,  # we are averaging outside
+            disorder_average=1,  # we are averaging outside
             beta=beta,
             bond_power=bond_power,
             bond_lengthscale=bond_lengthscale,
