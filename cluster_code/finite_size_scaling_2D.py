@@ -1,5 +1,5 @@
+# %%
 from tqdm import tqdm
-from func_for_fig4 import param_obs_2b
 from save_files_in_cluster import save_checkpoint
 import sys
 from sys import exit as sys_exit
@@ -9,7 +9,9 @@ import ast
 from pathlib import Path
 folder = Path.cwd()
 sys.path.append(str(folder.parent))
+from func_for_fig4 import param_obs_2b
 
+# %%
 # parallel variable
 if len(sys.argv) > 1:
     arguments = sys.argv[1:]
