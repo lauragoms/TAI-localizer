@@ -52,7 +52,7 @@ fname = results_dir / f'results_sigma{sigma}_num_reals_{disorder_averages}_L{sys
 
 z2 = []
 start_seed = 0
-
+# %%
 # ── resume from checkpoint if it exists ──────────────────────
 if fname.exists():
     with h5py.File(fname, 'r') as f:
@@ -93,7 +93,7 @@ def handle_signal(signum, frame):
 
 signal.signal(signal.SIGTERM, handle_signal)
 signal.signal(signal.SIGINT,  handle_signal)
-
+# %%
 # ── main loop ─────────────────────────────────────────────────
 try:
     for seed in tqdm(range(start_seed, disorder_averages)):
@@ -113,12 +113,12 @@ try:
             beta=beta,
             bond_power=bond_power,
             bond_lengthscale=bond_lengthscale,
-        )[0]  # just one disorder realisation at a time
+        )  # just one disorder realisation at a time
         z2.append(z2_seed)
 
         if (seed + 1) % SAVE_EVERY == 0:
             checkpoint(z2)
-            tqdm.tqdm.write(
+            tqdm.write(
                 f"Checkpoint saved ({seed + 1}/{disorder_averages} reals)")
 
 finally:
