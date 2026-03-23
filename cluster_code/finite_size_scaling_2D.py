@@ -1,4 +1,3 @@
-# %%
 from tqdm import tqdm
 from save_files_in_cluster import save_checkpoint
 import sys
@@ -7,12 +6,10 @@ import h5py
 import signal
 import ast
 from pathlib import Path
-folder = Path.cwd()
-sys.path.append(str(folder.parent))
-from func_for_fig4 import param_obs_2b
+from koala import pointsets
+from func_for_finitesize_2D import param_obs_2b
 
-# %%
-# parallel variable
+# ── parallel variable ─────────────────────────────────────────
 if len(sys.argv) > 1:
     arguments = sys.argv[1:]
     print("Arguments received", sys.argv[1])
@@ -38,7 +35,6 @@ kappa = 1
 # DISORDER
 kappa_shift = 0
 beta = 1
-
 W = 0
 
 disorder_averages = 100
@@ -52,7 +48,7 @@ fname = results_dir / f'results_sigma{sigma}_num_reals_{disorder_averages}_L{sys
 
 z2 = []
 start_seed = 0
-# %%
+
 # ── resume from checkpoint if it exists ──────────────────────
 if fname.exists():
     with h5py.File(fname, 'r') as f:
@@ -62,10 +58,18 @@ if fname.exists():
             print(
                 f"Resuming sigma={sigma} from seed {start_seed}/{disorder_averages}")
 
-
-# this function calls a general save_checkpoint
-# depending on the calculation we would change the expected_output
-# and atributes passed to it
+# ── reconstruct points state up to start_seed ────────────────
+# points evolve as a random walk, so we must replay all previous
+# steps to recover the correct configuration before resuming
+points = pointsets.grid(system_size, system_size)
+if start_seed > 0:
+    print(f"Replaying {start_seed} steps to reconstruct points state...")
+    for s in range(start_seed):
+        points = pointsets.move_all_points(
+            points, sigma, kappa_shift, beta,
+            rng=__import__('numpy').random.default_rng(int(s))
+        )
+    print("Points state reconstructed.")
 
 
 def checkpoint(z2):
@@ -93,12 +97,13 @@ def handle_signal(signum, frame):
 
 signal.signal(signal.SIGTERM, handle_signal)
 signal.signal(signal.SIGINT,  handle_signal)
-# %%
+
 # ── main loop ─────────────────────────────────────────────────
 try:
     for seed in tqdm(range(start_seed, disorder_averages)):
 
-        z2_seed = param_obs_2b(
+        z2_seed, points = param_obs_2b(
+            points=points,
             system_size=system_size,
             sigma=sigma,
             kappa_shift=kappa_shift,
@@ -110,13 +115,14 @@ try:
             seed=seed,
             hadamard_disorder=hadamard_disorder,
             kappa_spec=kappa,
-            disorder_average=1,  # we are averaging outside
             beta=beta,
             bond_power=bond_power,
             bond_lengthscale=bond_lengthscale,
-        )  # just one disorder realisation at a time
+        )
+
         z2.append(z2_seed)
         print(z2_seed)
+
         if (seed + 1) % SAVE_EVERY == 0:
             checkpoint(z2)
             tqdm.write(
