@@ -1,3 +1,4 @@
+from koala import pointsets
 from tqdm import tqdm
 from save_files_in_cluster import save_checkpoint
 import sys
@@ -6,9 +7,7 @@ import h5py
 import signal
 import ast
 from pathlib import Path
-folder = Path.cwd()
-sys.path.append(str(folder.parent))
-from func_for_fig5 import params_obs_3D
+from func_for_finitesize_3D import params_obs_3D
 
 
 # parallel variable
@@ -20,8 +19,8 @@ parname = 'sigma'
 
 # lattice params
 system_size = 10
-sigma_bounds = (0, 0.05 / system_size)
 num_realizations = 100
+sigma = sigma / system_size
 
 # sys params
 A = 1
@@ -39,22 +38,94 @@ onsite_disorder = 0
 resolution = 10
 
 
+# ── output folder and checkpoint config ──────────────────────
+SAVE_EVERY = 1
+results_dir = Path(f'results_3d_v_{kappa_shift}')
+results_dir.mkdir(exist_ok=True)
+
+fname = results_dir / f'results_sigma{sigma}_num_reals_{num_realizations}_L{system_size}.h5'
+
+z2 = []
+start_seed = 0
+
+# ── resume from checkpoint if it exists ──────────────────────
+if fname.exists():
+    with h5py.File(fname, 'r') as f:
+        if f'{parname}_{sigma}' in f:
+            z2 = list(f[f'{parname}_{sigma}']['z2'][:])
+            start_seed = len(z2)
+            print(
+                f"Resuming sigma={sigma} from seed {start_seed}/{num_realizations}")
+
+# ── reconstruct points state up to start_seed ────────────────
+# points evolve as a random walk, so we must replay all previous
+# steps to recover the correct configuration before resuming
+points = pointsets.grid(system_size, system_size, system_size)
+if start_seed > 0:
+    print(f"Replaying {start_seed} steps to reconstruct points state...")
+    for s in range(start_seed):
+        points = pointsets.move_all_points(
+            points, sigma, kappa_shift, beta,
+            rng=__import__('numpy').random.default_rng(int(s))
+        )
+    print("Points state reconstructed.")
 
 
-
-
-params_obs_3D(
-        system_size=system_size,
-        MJ=MJ,
-        A=A,
-        onsite_disorder=onsite_disorder,
-        disorder_average=num_realizations,
-        bond_lengthscale=bond_lengthscale,
-        bond_power=bond_power,
-        kappa_spec=kappa,
-        E0=E0,
-        sigma=sigma,
-        kappa_shift=kappa_shift,
-        beta=beta,
-        resolution=resolution,
+def checkpoint(z2):
+    save_checkpoint(
+        fname=fname,
+        parallelized_variable=sigma,
+        parallelized_variable_name=parname,
+        expected_output={'z2': z2},
+        atributes={
+            'MJ': MJ, 'A': A, 'onsite_disorder': onsite_disorder,
+            'sigma': sigma, 'L': system_size,
+            'kappa_shift': kappa_shift, 'beta': beta, 'resolution': resolution,
+            'bond_lengthscale': bond_lengthscale, 'bond_power': bond_power,
+            'kappa': kappa, 'E0': E0, 'num_reals': num_realizations,
+        }
     )
+
+
+# ── signal handler ────────────────────────────────────────────
+def handle_signal(signum, frame):
+    print(f"\nSignal {signum} received — saving checkpoint and exiting...")
+    checkpoint(z2)
+    sys_exit(0)
+
+
+signal.signal(signal.SIGTERM, handle_signal)
+signal.signal(signal.SIGINT,  handle_signal)
+
+
+# ── main loop ─────────────────────────────────────────────────
+try:
+    for seed in tqdm(range(start_seed, num_realizations)):
+        z2_seed, points = params_obs_3D(
+            system_size=system_size,
+            MJ=MJ,
+            A=A,
+            onsite_disorder=onsite_disorder,
+            bond_lengthscale=bond_lengthscale,
+            bond_power=bond_power,
+            kappa_spec=kappa,
+            E0=E0,
+            sigma=sigma,
+            kappa_shift=kappa_shift,
+            beta=beta,
+            resolution=resolution,
+            seed=seed,
+            points=points,
+        )
+
+        z2.append(z2_seed)
+        print(z2_seed)
+
+        if (seed + 1) % SAVE_EVERY == 0:
+            checkpoint(z2)
+            tqdm.write(
+                f"Checkpoint saved ({seed + 1}/{num_realizations} reals)")
+
+finally:
+    checkpoint(z2)
+    print("Final save completed.")
