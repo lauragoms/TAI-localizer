@@ -6,8 +6,8 @@
 #SBATCH --mem=4G
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=laura.gomez-paz@neel.cnrs.fr
-#SBATCH --output=output/adaptive_%j.out
-#SBATCH --error=output/adaptive_%j.err
+#SBATCH --output=%j.out
+#SBATCH --error=%j.err
 
 
 source /home/lgomez/miniconda3/etc/profile.d/conda.sh
@@ -16,4 +16,4 @@ conda activate peru_env
 ARG_ARRAY=("$@")
 ID=${ARG_ARRAY[$SLURM_ARRAY_TASK_ID]}
 
-/home/lgomez/miniconda3/envs/peru_env/bin/python job_for_3D_a.py "$ID"
+/home/lgomez/miniconda3/envs/peru_env/bin/python job_for_3D_bc.py "$ID"

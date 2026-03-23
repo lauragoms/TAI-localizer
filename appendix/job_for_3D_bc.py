@@ -17,7 +17,7 @@ if len(sys.argv) > 1:
 
     parallel_value = ast.literal_eval(arguments[0])
 
-seed = parallel_value
+seed = int(parallel_value)
 parname = 'seed'
 
 # computational params
