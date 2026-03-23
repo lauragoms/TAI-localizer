@@ -17,7 +17,7 @@ if len(sys.argv) > 1:
 parname = 'sigma'
 
 # lattice parameters
-system_size = 20
+system_size = 70
 sigma = sigma / system_size  # adjust to system size
 bond_distance = 1.3 / system_size
 
@@ -37,7 +37,7 @@ kappa_shift = 0
 beta = 1
 W = 0
 
-disorder_averages = 100
+disorder_averages = 1
 
 # ── output folder and checkpoint config ──────────────────────
 SAVE_EVERY = 1
