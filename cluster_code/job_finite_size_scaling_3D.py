@@ -10,15 +10,18 @@ from pathlib import Path
 from func_for_finitesize_3D import params_obs_3D
 
 
-# parallel variable
+# parallel variable and outputs
 if len(sys.argv) > 1:
     arguments = sys.argv[1:]
     print("Arguments received", sys.argv[1])
-    sigma = ast.literal_eval(arguments[0])
+    parallel_value = ast.literal_eval(arguments[0])
+    
+sigma = parallel_value
 parname = 'sigma'
 
+
 # lattice params
-system_size = 18
+system_size = 20
 num_realizations = 100
 sigma = sigma / system_size
 
@@ -43,19 +46,19 @@ SAVE_EVERY = 1
 results_dir = Path(f'results_3d_v_{kappa_shift}')
 results_dir.mkdir(exist_ok=True)
 
-fname = results_dir / f'results_sigma{sigma}_num_reals_{num_realizations}_L{system_size}.h5'
+fname = results_dir / f'results_{parname}{parallel_value}_num_reals_{num_realizations}_L{system_size}.h5'
 
-z2 = []
+
 start_seed = 0
 
 # ── resume from checkpoint if it exists ──────────────────────
 if fname.exists():
     with h5py.File(fname, 'r') as f:
-        if f'{parname}_{sigma}' in f:
-            z2 = list(f[f'{parname}_{sigma}']['z2'][:])
+        if f'{parname}_{parallel_value}' in f:
+            z2 = list(f[f'{parname}_{parallel_value}']['z2'][:]) # ADD LINES HERE FOR MORE EXPECTED OUTPUTS
             start_seed = len(z2)
             print(
-                f"Resuming sigma={sigma} from seed {start_seed}/{num_realizations}")
+                f"Resuming {parname}={parallel_value} from seed {start_seed}/{num_realizations}")
 
 # ── reconstruct points state up to start_seed ────────────────
 # points evolve as a random walk, so we must replay all previous
@@ -71,12 +74,12 @@ if start_seed > 0:
     print("Points state reconstructed.")
 
 
-def checkpoint(z2):
+def checkpoint(z2): # ADD VARIABLES HERE FOR MORE EXPECTED OUTPUTS
     save_checkpoint(
         fname=fname,
         parallelized_variable=sigma,
         parallelized_variable_name=parname,
-        expected_output={'z2': z2},
+        expected_output={'z2': z2},  # ADD VARIABLES HERE FOR MORE EXPECTED OUTPUTS
         atributes={
             'MJ': MJ, 'A': A, 'onsite_disorder': onsite_disorder,
             'sigma': sigma, 'L': system_size,
@@ -87,10 +90,11 @@ def checkpoint(z2):
     )
 
 
-# ── signal handler ────────────────────────────────────────────
+# ── signal handler if job is canceled ────────────────────────────────────────────
 def handle_signal(signum, frame):
     print(f"\nSignal {signum} received — saving checkpoint and exiting...")
-    checkpoint(z2)
+    if z2:
+        checkpoint(z2)
     sys_exit(0)
 
 
@@ -99,6 +103,7 @@ signal.signal(signal.SIGINT,  handle_signal)
 
 
 # ── main loop ─────────────────────────────────────────────────
+z2 = []
 try:
     for seed in tqdm(range(start_seed, num_realizations)):
         z2_seed, points = params_obs_3D(

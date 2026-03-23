@@ -13,9 +13,10 @@ from func_for_finitesize_2D import param_obs_2b
 if len(sys.argv) > 1:
     arguments = sys.argv[1:]
     print("Arguments received", sys.argv[1])
-    sigma = ast.literal_eval(arguments[0])
+    parallel_value = ast.literal_eval(arguments[0])
+    
+sigma = parallel_value
 parname = 'sigma'
-
 # lattice parameters
 system_size = 70
 sigma = sigma / system_size  # adjust to system size
@@ -37,26 +38,27 @@ kappa_shift = 0
 beta = 1
 W = 0
 
-disorder_averages = 1
+disorder_averages = 100
 
 # ── output folder and checkpoint config ──────────────────────
 SAVE_EVERY = 1
 results_dir = Path(f'results_2d_v_{kappa_shift}')
 results_dir.mkdir(exist_ok=True)
 
-fname = results_dir / f'results_sigma{sigma}_num_reals_{disorder_averages}_L{system_size}.h5'
+fname = results_dir / f'results_{parname}{parallel_value}_num_reals_{disorder_averages}_L{system_size}.h5'
 
-z2 = []
+
 start_seed = 0
 
 # ── resume from checkpoint if it exists ──────────────────────
 if fname.exists():
     with h5py.File(fname, 'r') as f:
-        if f'{parname}_{sigma}' in f:
-            z2 = list(f[f'{parname}_{sigma}']['z2'][:])
+        if f'{parname}_{parallel_value}' in f:
+            z2 = list(f[f'{parname}_{parallel_value}']['z2'][:]) # ADD LINES HERE FOR MORE EXPECTED OUTPUTS
             start_seed = len(z2)
             print(
-                f"Resuming sigma={sigma} from seed {start_seed}/{disorder_averages}")
+                f"Resuming {parname}={parallel_value} from seed {start_seed}/{disorder_averages}")
+
 
 # ── reconstruct points state up to start_seed ────────────────
 # points evolve as a random walk, so we must replay all previous
@@ -72,7 +74,7 @@ if start_seed > 0:
     print("Points state reconstructed.")
 
 
-def checkpoint(z2):
+def checkpoint(z2):  # ADD VARIABLES HERE FOR MORE EXPECTED OUTPUTS
     save_checkpoint(
         fname=fname,
         parallelized_variable=sigma,
@@ -91,7 +93,8 @@ def checkpoint(z2):
 # ── signal handler ────────────────────────────────────────────
 def handle_signal(signum, frame):
     print(f"\nSignal {signum} received — saving checkpoint and exiting...")
-    checkpoint(z2)
+    if z2:
+        checkpoint(z2)
     sys_exit(0)
 
 
@@ -99,6 +102,7 @@ signal.signal(signal.SIGTERM, handle_signal)
 signal.signal(signal.SIGINT,  handle_signal)
 
 # ── main loop ─────────────────────────────────────────────────
+z2 = []
 try:
     for seed in tqdm(range(start_seed, disorder_averages)):
 
