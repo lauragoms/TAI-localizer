@@ -19,7 +19,7 @@ if len(sys.argv) > 1:
 kappa = parallel_value
 parname = 'kappa'
 # computational params
-E_values = np.linspace(-2.5, 2.5, 3)
+E_values = np.linspace(-2.5, 2.5, 50)
 
 
 # lattice params
