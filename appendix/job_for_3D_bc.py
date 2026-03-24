@@ -51,15 +51,19 @@ results_dir = Path('results_3d_bc')
 results_dir.mkdir(exist_ok=True)
 fname = results_dir / f'results_{parname}{parallel_value}_kappa_{kappa}_L{system_size}.h5'
 
+local_gap_grid = []
+completed_MJ = 0
+
 if fname.exists():
     with h5py.File(fname, 'r') as f:
         key = f'{parname}_{parallel_value}'
         if key in f:
             local_gap_grid = list(f[key]['local_gap_grid'])
             completed_MJ = len(local_gap_grid)
-            M_values = M_values[completed_MJ:]
             print(f"Resuming from MJ index {completed_MJ}/{len(M_values)}")
 
+M_values_full = M_values.copy()
+M_values = M_values[completed_MJ:]
 
 def checkpoint(local_gap_grid):  # ADD VARIABLES HERE FOR MORE EXPECTED OUTPUTS
     save_checkpoint(
@@ -68,8 +72,8 @@ def checkpoint(local_gap_grid):  # ADD VARIABLES HERE FOR MORE EXPECTED OUTPUTS
         parallelized_variable_name=parname,
         expected_output={'local_gap_grid': local_gap_grid},
         atributes={
-            'Mmin': M_values[0],
-            'Mmax': M_values[-1],
+            'Mmin': M_values_full[0],
+            'Mmax': M_values_full[-1],
             'Wmin': W_values[0],
             'Wmax': W_values[-1],
             'system_size': system_size,
@@ -84,10 +88,6 @@ def checkpoint(local_gap_grid):  # ADD VARIABLES HERE FOR MORE EXPECTED OUTPUTS
         }
     )
 
-
-local_gap_grid = []
-
-
 # ── signal handler ────────────────────────────────────────────
 def handle_signal(signum, frame):
     print(f"\nSignal {signum} received — saving checkpoint and exiting...")
@@ -101,7 +101,7 @@ signal.signal(signal.SIGINT,  handle_signal)
 
 
 try:
-    for i, MJ in tqdm(enumerate(M_values)):
+    for i, MJ in tqdm(enumerate(M_values), total=len(M_values)):
         local_gap_grid.append([])
         for onsite_disorder in W_values:
             locgap = localgap_sys_3D(
@@ -121,10 +121,10 @@ try:
                 beta=beta,
                 resolution=resolution
             )
-            local_gap_grid[i].append(locgap)
+            local_gap_grid[completed_MJ + i].append(locgap)
         checkpoint(local_gap_grid)
         tqdm.write(
-            f"Checkpoint saved for MJ={MJ} ({i + 1}/{len(M_values)} MJ values)")  
+            f"Checkpoint saved for MJ={MJ} ({completed_MJ+ i + 1}/{len(M_values_full)} MJ values)")  
 finally:
     if local_gap_grid:
         checkpoint(local_gap_grid)
