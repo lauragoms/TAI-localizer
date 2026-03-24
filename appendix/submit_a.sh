@@ -7,8 +7,8 @@
 #SBATCH --mem=4G
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=laura.gomez-paz@neel.cnrs.fr
-#SBATCH --output=output/adaptive_%j.out
-#SBATCH --error=output/adaptive_%j.err
+#SBATCH --output=output/%A.%a.out
+#SBATCH --error=output/%A.%a.err
 
 
 module purge

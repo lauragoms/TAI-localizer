@@ -28,7 +28,7 @@ bond_distance = 1.3 / system_size
 
 # sys params
 A = 1
-MJ = 1.5
+MJ = 2
 bond_lengthscale = 1 / system_size
 bond_power = 1 / system_size
 
@@ -49,7 +49,7 @@ SAVE_EVERY = 1
 results_dir = Path('results_3d_a')
 results_dir.mkdir(exist_ok=True)
 
-fname = results_dir / f'results_{parname}{parallel_value}_E0_{len(E_values)}_L{system_size}.h5'
+fname = results_dir / f'results_{parname}{parallel_value}_E0_{len(E_values)}_L{system_size}_M_{MJ}.h5'
 
 
 idx_start = 0
