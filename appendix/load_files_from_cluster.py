@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 
 
-def load_cluster_results(results_dir, fname_pattern, check_reals=True):
+def load_cluster_results(results_dir, fname_pattern, check_reals=None):
     """
     Loads all HDF5 result files matching fname_pattern from results_dir.
     Returns a dict with all datasets sorted by the parallelized variable,
@@ -50,8 +50,9 @@ def load_cluster_results(results_dir, fname_pattern, check_reals=True):
                 if dataset_name not in data:
                     data[dataset_name] = []
                 # check if all realizations are present for the first parameter value
-                if i==0 and check_reals:
-                    num_reals = grp.attrs['num_reals']
+                if i==0:
+                    num_reals = grp.attrs.get('num_reals', check_reals)
+
                     if len(grp[dataset_name]) != num_reals:
                         print(
                             f"Warning: Parameter {grp.attrs[par_name]} removed, it has only {len(grp[dataset_name])} / {num_reals} realizations")
@@ -75,14 +76,17 @@ def load_cluster_results(results_dir, fname_pattern, check_reals=True):
         # for elem in values:
             # print(len(elem))
         # for i, val in enumerate(values):
-        #     num_reals = 50 
+        #     num_reals = 50
 
         #     if len(val) != num_reals:
         #         print(f"Parameter {np.array(par_values)[idx][i]} has averaged over only {len(val)} / {num_reals} realizations")
+        # print(len(values))
+        # for elem in values:
+        #     print(len(elem[0]))
         results[dataset_name] = np.array(values)[idx]
 
 
-    # metadata from first file
+    #  metadata from first file
     with h5py.File(files[0], 'r') as hf:
         key = list(hf.keys())[0]
         results['attrs'] = dict(hf[key].attrs)
