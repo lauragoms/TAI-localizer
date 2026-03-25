@@ -36,7 +36,7 @@ bond_lengthscale = 1 / system_size
 bond_power = 1 / system_size
 
 # localizer params
-kappa = 2
+kappa = 10
 E0 = 0
 
 # structural disorder params
