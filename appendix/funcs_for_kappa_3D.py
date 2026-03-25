@@ -72,7 +72,7 @@ def localgap_sys_3D(
         E0=E0,
         kappa=kappa_spec,
         norbs=4,
-        whole_localizer=False,
+        whole_localizer=True,
     )
     locgap = np.abs(local_gap_localizer(L))[0]
     return locgap
