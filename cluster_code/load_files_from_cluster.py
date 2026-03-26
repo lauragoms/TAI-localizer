@@ -54,7 +54,7 @@ def load_cluster_results(results_dir, fname_pattern):
                 if i==0:
                     if len(grp[dataset_name]) != num_reals:
                         print(
-                            f"Warning: Parameter {grp.attrs[par_name]} removed, it has only {len(grp[dataset_name])} / {num_reals} realizations")
+                            f"Warning: Parameter {grp.attrs[par_name]*70} removed, it has only {len(grp[dataset_name])} / {num_reals} realizations")
                         non_completed_runs.append([j, grp.attrs[par_name]])
                 data[dataset_name].append(grp[dataset_name][:])
     # remove datasets with non completed runs
