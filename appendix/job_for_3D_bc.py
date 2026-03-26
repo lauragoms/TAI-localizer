@@ -36,7 +36,7 @@ bond_lengthscale = 1 / system_size
 bond_power = 1 / system_size
 
 # localizer params
-kappa = 10
+kappa = 2
 E0 = 0
 
 # structural disorder params
@@ -48,7 +48,8 @@ resolution = 10
 
 # save checkpoinmt function
 results_dir = Path('results_3d_bc')
-results_dir.mkdir(exist_ok=True)
+results_dir.mkdir(parents=True, exist_ok=True)
+
 fname = results_dir / f'results_{parname}{parallel_value}_kappa_{kappa}_L{system_size}.h5'
 
 local_gap_grid = []
