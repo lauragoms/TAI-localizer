@@ -2,9 +2,9 @@
 #SBATCH -J locgap
 #SBATCH --partition=general
 #SBATCH --qos=xlong
-#SBATCH -t 3-00:00:00
+#SBATCH -t 8-00:00:00
 #SBATCH --array=0-49
-#SBATCH --mem=20G
+#SBATCH --mem=40G
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=laura.gomez-paz@neel.cnrs.fr
 #SBATCH -o output/%A.%a.out
