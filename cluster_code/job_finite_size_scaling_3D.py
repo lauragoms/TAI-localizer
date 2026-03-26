@@ -21,7 +21,7 @@ parname = 'sigma'
 
 
 # lattice params
-system_size = 10
+system_size = 18
 num_realizations = 100
 sigma = sigma / system_size
 
