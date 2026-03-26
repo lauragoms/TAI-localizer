@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH -J locgap
 #SBATCH --partition=general
-#SBATCH --qos=xlong
-#SBATCH -t 8-00:00:00
+#SBATCH --qos=regular
+#SBATCH -t 1-00:00:00
 #SBATCH --array=0-49
-#SBATCH --mem=40G
+##SBATCH --mem=40G
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=laura.gomez-paz@neel.cnrs.fr
 #SBATCH -o output/%A.%a.out
@@ -24,4 +24,4 @@ export NUMEXPR_NUM_THREADS=1
 ARG_ARRAY=("$@")
 ID=${ARG_ARRAY[$SLURM_ARRAY_TASK_ID]}
 
-~/.conda/envs/peru_env/bin/python job_finite_size_scaling_2D.py "$ID"
+~/.conda/envs/peru_env/bin/python job_finite_size_scaling_3D.py "$ID"
