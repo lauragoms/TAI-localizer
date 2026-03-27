@@ -4,7 +4,7 @@
 #SBATCH --qos=regular
 #SBATCH -t 1-00:00:00
 #SBATCH --array=0-49
-##SBATCH --mem=40G
+#SBATCH --mem=20G
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=laura.gomez-paz@neel.cnrs.fr
 #SBATCH -o output/%A.%a.out
