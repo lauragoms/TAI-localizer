@@ -18,7 +18,7 @@ if len(sys.argv) > 1:
 sigma = parallel_value
 parname = 'sigma'
 # lattice parameters
-system_size = 70
+system_size = 20
 sigma = sigma / system_size  # adjust to system size
 bond_distance = 1.3 / system_size
 
@@ -34,7 +34,7 @@ bond_lengthscale = 1 / system_size
 kappa = 1
 
 # DISORDER
-kappa_shift = 0
+kappa_shift = 3*bond_lengthscale
 beta = 1
 W = 0
 
@@ -43,7 +43,7 @@ disorder_averages = 100
 # ── output folder and checkpoint config ──────────────────────
 SAVE_EVERY = 1
 results_dir = Path(f'results_2d_v_{kappa_shift}')
-results_dir.mkdir(exist_ok=True)
+results_dir.mkdir(exist_ok=True) #if exists, it will not raise an error
 
 fname = results_dir / f'results_{parname}{parallel_value}_num_reals_{disorder_averages}_L{system_size}.h5'
 
