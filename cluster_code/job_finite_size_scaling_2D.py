@@ -14,7 +14,7 @@ if len(sys.argv) > 1:
     arguments = sys.argv[1:]
     print("Arguments received", sys.argv[1])
     parallel_value = ast.literal_eval(arguments[0])
-    
+
 sigma = parallel_value
 parname = 'sigma'
 # lattice parameters
