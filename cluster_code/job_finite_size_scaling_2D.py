@@ -18,7 +18,7 @@ if len(sys.argv) > 1:
 sigma = parallel_value
 parname = 'sigma'
 # lattice parameters
-system_size = 30
+system_size = 10
 sigma = sigma / system_size  # adjust to system size
 bond_distance = 1.3 / system_size
 
@@ -34,7 +34,7 @@ bond_lengthscale = 1 / system_size
 kappa = 1
 
 # DISORDER
-kappa_shift = 3*bond_lengthscale
+kappa_shift = 0 #3*bond_lengthscale
 beta = 1
 W = 0
 
