@@ -24,4 +24,4 @@ export NUMEXPR_NUM_THREADS=1
 ARG_ARRAY=("$@")
 ID=${ARG_ARRAY[$SLURM_ARRAY_TASK_ID]}
 
-~/.conda/envs/peru_env/bin/python job_finite_size_scaling_2D.py "$ID"
+~/.conda/envs/peru_env/bin/python job_finite_size_scaling_3D.py "$ID"
