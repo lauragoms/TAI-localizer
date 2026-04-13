@@ -18,7 +18,7 @@ num_realizations = 100
 # sys params
 A = 1
 bond_lengthscale = 1 / system_size
-bond_power = 1 / system_size
+bond_power = 1 #/ system_size
 onsite_disorder = 0
 
 # localizer params

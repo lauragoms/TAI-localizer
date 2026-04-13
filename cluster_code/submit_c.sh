@@ -20,4 +20,4 @@ source $(conda info --base)/etc/profile.d/conda.sh
 conda activate peru_env
 
 export OMPI_MCA_btl=tcp,self
-mpiexec -np $SLURM_NTASKS ~/.conda/envs/peru_env/bin/python -m mpi4py.futures job_for_fig_4c_cluster.py
+mpiexec -np $SLURM_NTASKS ~/.conda/envs/peru_env/bin/python -m mpi4py.futures job_for_fig_5c_cluster.py
