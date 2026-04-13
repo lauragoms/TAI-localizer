@@ -21,7 +21,7 @@ parname = 'sigma'
 
 
 # lattice params
-system_size = 3
+system_size = 10
 num_realizations = 100
 sigma = sigma / system_size
 
@@ -29,13 +29,13 @@ sigma = sigma / system_size
 A = 1
 MJ = 2
 bond_lengthscale = 1 / system_size
-bond_power = 1 / system_size
+bond_power = 1 #/ system_size
 # localizer params
 kappa = 2
 E0 = 0
 
 # DISORDER
-kappa_shift = 0 #3*bond_lengthscale
+kappa_shift = 3*bond_lengthscale
 beta = 1
 onsite_disorder = 0
 resolution = 10
@@ -43,7 +43,7 @@ resolution = 10
 
 # ── output folder and checkpoint config ──────────────────────
 SAVE_EVERY = 1
-results_dir = Path(f'results_3d_v_{kappa_shift}')
+results_dir = Path(f'results_3d_v_{kappa_shift}_bondpower_{bond_power}')
 results_dir.mkdir(exist_ok=True)
 
 fname = results_dir / f'results_{parname}{parallel_value}_num_reals_{num_realizations}_L{system_size}.h5'
