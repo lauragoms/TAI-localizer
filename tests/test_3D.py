@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+from koala import pointsets
 from tai_localiser.lauralizer.amorphous_model_3D import (
     amorph_hopping,
     amorph_3DTI
@@ -33,10 +33,17 @@ def grid_3D(nx: int, ny: int, nz: int) -> np.ndarray:
     g_out = np.reshape(np.meshgrid(pos_x, pos_y, pos_z), [3, -1]).T
     return g_out
 
-
-system_size = 15
+sigma = 0.005
+kappa_shift = 0
+beta = 1
+rng = np.random.default_rng()
+resolution = 10
+system_size = 3
 bond_distance = 1.01 / system_size
 sites = grid_3D(system_size, system_size, system_size)
+sites = pointsets.move_all_points(
+        sites, sigma, kappa_shift, beta, resolution=resolution, rng=rng
+        )
 bonds = bonds_func(sites, bond_distance)
 syst = amorph_3DTI(sites, bonds)
 sys_sites = syst.finalized().sites
@@ -63,7 +70,7 @@ def test_topology():
         'MJ': 2.3,
         'A': 1.0,
         'bond_lengthscale': bond_distance,
-        'bond_power': bond_distance,
+        'bond_power': 1,
         'dis_onsite': 0.0,
         'rng_W': rng,
     }
