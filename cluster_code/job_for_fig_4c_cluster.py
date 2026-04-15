@@ -9,7 +9,7 @@ comm = MPI.COMM_WORLD
 print(comm.Get_rank(), comm.Get_size())
 
 # lattice parameters
-system_size = 30
+system_size = 10
 bond_distance = 1.3 / system_size
 
 # model parameters
