@@ -10,8 +10,8 @@ print(comm.Get_rank(), comm.Get_size())
 
 MJ_bounds = (0, 4)
 # lattice params
-system_size = 10
-sigma_bounds = (0, 0.05 / system_size)
+system_size = 5
+sigma_bounds = (0, 0.5 / system_size)
 num_realizations = 100
 # sys params
 A = 1
