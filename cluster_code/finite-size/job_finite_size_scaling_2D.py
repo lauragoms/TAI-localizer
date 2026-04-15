@@ -106,7 +106,7 @@ z2 = []
 try:
     for seed in tqdm(range(start_seed, disorder_averages)):
 
-        z2_seed, points = param_obs_2b(
+        z2_seed = param_obs_2b(
             points=points,
             system_size=system_size,
             sigma=sigma,

@@ -101,4 +101,4 @@ def param_obs_2b(
     del loc_rotated
     gc.collect()
 
-    return inv_localizer, points
+    return inv_localizer

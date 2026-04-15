@@ -15,7 +15,7 @@ if len(sys.argv) > 1:
     arguments = sys.argv[1:]
     print("Arguments received", sys.argv[1])
     parallel_value = ast.literal_eval(arguments[0])
-    
+
 sigma = parallel_value
 parname = 'sigma'
 
@@ -106,7 +106,8 @@ signal.signal(signal.SIGINT,  handle_signal)
 z2 = []
 try:
     for seed in tqdm(range(start_seed, num_realizations)):
-        z2_seed, points = params_obs_3D(
+        z2_seed = params_obs_3D(
+            points=points,
             system_size=system_size,
             MJ=MJ,
             A=A,
@@ -120,7 +121,6 @@ try:
             beta=beta,
             resolution=resolution,
             seed=seed,
-            points=points,
         )
 
         z2.append(z2_seed)

@@ -70,4 +70,4 @@ def params_obs_3D(
     )
     idx_dis = sign_det(L, **kwargs)
 
-    return idx_dis, points
+    return idx_dis
