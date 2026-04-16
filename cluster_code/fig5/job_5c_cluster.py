@@ -28,7 +28,7 @@ E0 = 0
 # structural disorder params
 kappa_shift = 0.3
 beta = 1
-resolution = 10
+resolution = 20
 
 
 def goal(ps):
