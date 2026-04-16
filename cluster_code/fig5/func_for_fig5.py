@@ -31,7 +31,7 @@ def params_obs_3D(
     # create lattice:
     init_points = grid(system_size, system_size, system_size)
     idx_dis = []
-    ptslist = []
+    # ptslist = []
     for seed in range(disorder_average):
         rng = np.random.default_rng(seed)
 
@@ -82,6 +82,6 @@ def params_obs_3D(
             whole_localizer=False,
         )
         idx_dis.append(sign_det(L, **kwargs))
-        ptslist.append(positions)
-    return np.mean(np.array(idx_dis)), ptslist  # average over disorder realizations
+        # ptslist.append(positions)
+    return np.mean(np.array(idx_dis))#, ptslist  # average over disorder realizations
 
