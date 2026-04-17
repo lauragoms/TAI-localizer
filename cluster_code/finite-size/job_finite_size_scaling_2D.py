@@ -18,7 +18,7 @@ if len(sys.argv) > 1:
 sigma = parallel_value
 parname = 'sigma'
 # lattice parameters
-system_size = 30
+system_size = 70
 sigma = sigma / system_size  # adjust to system size
 bond_distance = 1.3 / system_size
 

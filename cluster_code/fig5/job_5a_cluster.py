@@ -60,7 +60,8 @@ if __name__ == "__main__":
         f,
         bounds=[MJ_bounds, disorder_bounds],
     )
-    # learner_dis.load(fname)
+    learner_dis.load(fname)
+    print(learner_dis.npoints)
 
     runner_dis = adaptive.Runner(
         learner_dis,
