@@ -11,14 +11,14 @@ print(comm.Get_rank(), comm.Get_size())
 MJ_bounds = (0, 4)
 
 # lattice params
-system_size = 5
-sigma_bounds = (0, 0.5 / system_size)
+system_size = 10
+sigma_bounds = (0, 0.3 / system_size)
 num_realizations = 100
 
 # sys params
 A = 1
 bond_lengthscale = 1 / system_size
-bond_power = 1 / system_size
+bond_power = 1
 onsite_disorder = 0
 
 # localizer params
@@ -28,7 +28,7 @@ E0 = 0
 # structural disorder params
 kappa_shift = 0.3
 beta = 1
-resolution = 20
+resolution = 10
 
 
 def goal(ps):

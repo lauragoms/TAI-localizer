@@ -25,6 +25,9 @@ system_size = 3
 num_realizations = 100
 sigma = sigma / system_size
 
+# initial points
+initial_points = pointsets.grid(system_size, system_size, system_size)
+
 # sys params
 A = 1
 MJ = 2
@@ -60,19 +63,6 @@ if fname.exists():
             print(
                 f"Resuming {parname}={parallel_value} from seed {start_seed}/{num_realizations}")
 
-# ── reconstruct points state up to start_seed ────────────────
-# points evolve as a random walk, so we must replay all previous
-# steps to recover the correct configuration before resuming
-points = pointsets.grid(system_size, system_size, system_size)
-if start_seed > 0:
-    print(f"Replaying {start_seed} steps to reconstruct points state...")
-    for s in range(start_seed):
-        points = pointsets.move_all_points(
-            points, sigma, kappa_shift, beta,
-            rng=__import__('numpy').random.default_rng(int(s))
-        )
-    print("Points state reconstructed.")
-
 
 def checkpoint(z2): # ADD VARIABLES HERE FOR MORE EXPECTED OUTPUTS
     save_checkpoint(
@@ -107,7 +97,7 @@ z2 = []
 try:
     for seed in tqdm(range(start_seed, num_realizations)):
         z2_seed = params_obs_3D(
-            points=points,
+            points=initial_points,
             system_size=system_size,
             MJ=MJ,
             A=A,

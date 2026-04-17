@@ -22,6 +22,9 @@ system_size = 3
 sigma = sigma / system_size  # adjust to system size
 bond_distance = 1.3 / system_size
 
+# create inital lattice points
+initial_points = pointsets.grid(system_size, system_size)
+
 # model parameters
 A = 1.0
 B = 1.0
@@ -60,20 +63,6 @@ if fname.exists():
                 f"Resuming {parname}={parallel_value} from seed {start_seed}/{disorder_averages}")
 
 
-# ── reconstruct points state up to start_seed ────────────────
-# points evolve as a random walk, so we must replay all previous
-# steps to recover the correct configuration before resuming
-points = pointsets.grid(system_size, system_size)
-if start_seed > 0:
-    print(f"Replaying {start_seed} steps to reconstruct points state...")
-    for s in range(start_seed):
-        points = pointsets.move_all_points(
-            points, sigma, kappa_shift, beta,
-            rng=__import__('numpy').random.default_rng(int(s))
-        )
-    print("Points state reconstructed.")
-
-
 def checkpoint(z2):  # ADD VARIABLES HERE FOR MORE EXPECTED OUTPUTS
     save_checkpoint(
         fname=fname,
@@ -107,7 +96,7 @@ try:
     for seed in tqdm(range(start_seed, disorder_averages)):
 
         z2_seed = param_obs_2b(
-            points=points,
+            points=initial_points,
             system_size=system_size,
             sigma=sigma,
             kappa_shift=kappa_shift,
