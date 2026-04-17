@@ -13,11 +13,12 @@
 mkdir -p output
 module purge
 module load Miniforge3
+module load mpi4py/3.1.4-gompi-2022b
 source $(conda info --base)/etc/profile.d/conda.sh
-conda activate nompi
+conda activate peru_env
 
 
 ARG_ARRAY=("$@")
 ID=${ARG_ARRAY[$SLURM_ARRAY_TASK_ID]}
 
-~/.conda/envs/nompi/bin/python job_finite_size_scaling_3D.py "$ID"
+~/.conda/envs/peru_env/bin/python job_finite_size_scaling_3D.py "$ID"

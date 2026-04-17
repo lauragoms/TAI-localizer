@@ -12,7 +12,7 @@ MJ_bounds = (0, 4)
 
 # lattice params
 system_size = 10
-sigma_bounds = (0, 0.3 / system_size)
+sigma_bounds = (0, 0.5 / system_size)
 num_realizations = 100
 
 # sys params

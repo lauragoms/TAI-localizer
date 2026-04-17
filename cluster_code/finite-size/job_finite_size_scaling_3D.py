@@ -21,7 +21,7 @@ parname = 'sigma'
 
 
 # lattice params
-system_size = 3
+system_size = 18
 num_realizations = 100
 sigma = sigma / system_size
 
@@ -32,7 +32,7 @@ initial_points = pointsets.grid(system_size, system_size, system_size)
 A = 1
 MJ = 2
 bond_lengthscale = 1 / system_size
-bond_power = 1 / system_size
+bond_power = 1
 # localizer params
 kappa = 2
 E0 = 0

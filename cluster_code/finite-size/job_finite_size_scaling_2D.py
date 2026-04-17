@@ -18,7 +18,7 @@ if len(sys.argv) > 1:
 sigma = parallel_value
 parname = 'sigma'
 # lattice parameters
-system_size = 3
+system_size = 30
 sigma = sigma / system_size  # adjust to system size
 bond_distance = 1.3 / system_size
 
@@ -29,7 +29,7 @@ initial_points = pointsets.grid(system_size, system_size)
 A = 1.0
 B = 1.0
 Delta = 2
-hadamard_disorder = 0.15
+hadamard_disorder = 0
 bond_power = 1
 bond_lengthscale = 1 / system_size
 

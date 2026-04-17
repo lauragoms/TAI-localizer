@@ -22,48 +22,6 @@ from tai_localiser.lauralizer.localizer import (
 )
 
 
-def param_obs_2d_benchmark_peru(
-    system_size: int,
-    sigma: float,
-    bond_distance: float,
-    A: float,
-    B: float,
-    Delta: float,
-    onsite_disorder: float,
-    alpha: float = 0,
-    hadamard_disorder: float = 0,
-    kappa=1,
-    disorder_average=1,
-    beta=5,
-    **kwargs
-) -> tuple:
-
-    # make the points
-    rng = np.random.default_rng()
-    points = pointsets.grid(system_size, system_size)
-
-    s_list = np.zeros(disorder_average)
-    for j in range(disorder_average):
-        points = pointsets.move_all_points(points, sigma, sigma, beta)
-        lattice = proximity_lattice(points, bond_distance)
-        lattice = gu.cut_boundaries(lattice)
-
-        ws = (rng.random(lattice.n_vertices) * 2 - 1) * onsite_disorder / 2
-        wp = (rng.random(lattice.n_vertices) * 2 - 1) * onsite_disorder / 2
-        ham_params = (
-            A,
-            B,
-            alpha,
-            Delta,
-            ws,
-            wp,
-        )
-        hamiltonian = bhz_ham(lattice, *ham_params, **kwargs)
-        spec_loc = z2_spec_loc(lattice, hamiltonian, 0, bhz_trs_operator)
-        s_list[j] = spec_loc
-    return np.average(s_list)
-
-
 def param_obs_2b(
     system_size: int,
     sigma: float,

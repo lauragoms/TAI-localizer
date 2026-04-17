@@ -15,7 +15,13 @@ import copy
 import pfapack.ctypes as cpf
 import ctypes
 
-ctx = mumps.Context()  # Provided by python-mumps package
+_ctx = None
+
+def _get_ctx():
+    global _ctx
+    if _ctx is None:
+        _ctx = mumps.Context()
+    return _ctx
 
 def zero_params(system):
     return {parameter: 0 for parameter in system.parameters}
@@ -95,7 +101,7 @@ class LuInv(sp.linalg.LinearOperator):
         # Kwant mumps only wraps complex dtype
         A = A.astype(complex, copy=False)
 
-        inst = ctx
+        inst = _get_ctx()
         inst.analyze(A, ordering="metis")
         inst.factor(A)
         self.solve = inst.solve
@@ -324,7 +330,7 @@ def sparse_spectral_localizer_AII3D(
         if compute_inv is True:
             # invariant = find_signature(H+1j*kappa*D)
 
-            invariant = np.real(ctx.slogdet(block_1, ordering="scotch")[0])
+            invariant = np.real(_get_ctx().slogdet(block_1, ordering="scotch")[0])
 
             invariant_realization = invariant_realization + invariant
             print("Invariant realization:", invariant)

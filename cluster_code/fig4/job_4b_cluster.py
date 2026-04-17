@@ -28,7 +28,7 @@ kappa_shift_b = 0
 beta = 1
 
 # adaptive params
-sigma_bounds = (0.0, 0.5 / system_size)
+sigma_bounds = (0.0, 1 / system_size)
 delta_bounds = (-2, 4)
 
 disorder_averages = 100
