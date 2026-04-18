@@ -38,7 +38,7 @@ kappa = 2
 E0 = 0
 
 # DISORDER
-kappa_shift = 0 #3*bond_lengthscale
+kappa_shift = 3*bond_lengthscale
 beta = 1
 onsite_disorder = 0
 resolution = 10

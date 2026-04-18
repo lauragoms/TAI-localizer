@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -J locgap
 #SBATCH --partition=general
-#SBATCH --qos=regular
-#SBATCH -t 1-00:00:00
+#SBATCH --qos=xlong
+#SBATCH -t 8-00:00:00
 #SBATCH --array=0-49
 #SBATCH --mem=30G
 #SBATCH --mail-type=BEGIN,END

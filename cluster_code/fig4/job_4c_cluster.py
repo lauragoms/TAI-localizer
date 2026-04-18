@@ -68,7 +68,8 @@ if __name__ == "__main__":
         ],
     )
     learner_dis.load(fname)
-    print(learner_dis.npoints)
+    print(f"Starting with {learner_dis.npoints} points")
+
 
     runner_dis = adaptive.Runner(
         learner_dis,

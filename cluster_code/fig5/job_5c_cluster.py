@@ -61,8 +61,8 @@ if __name__ == "__main__":
         f,
         bounds=[MJ_bounds, sigma_bounds],
     )
-    # learner_dis.load(fname)
-
+    learner_dis.load(fname)
+    print(f"Starting with {learner_dis.npoints} points")
     runner_dis = adaptive.Runner(
         learner_dis,
         executor=MPIPoolExecutor(max_workers=comm.Get_size()-1),

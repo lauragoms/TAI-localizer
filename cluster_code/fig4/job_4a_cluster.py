@@ -58,7 +58,7 @@ def f(delta_dis):
 
 
 if __name__ == "__main__":
-    print('hey')
+
     fname = "data_fig4a.pkl"
     learner_dis = adaptive.Learner2D(
         f,
@@ -68,7 +68,8 @@ if __name__ == "__main__":
         ],
     )
     learner_dis.load(fname)
-    print(learner_dis.npoints)
+    print(f"Starting with {learner_dis.npoints} points")
+
     runner_dis = adaptive.Runner(
         learner_dis,
         executor=MPIPoolExecutor(max_workers=comm.Get_size()-1),
