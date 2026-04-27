@@ -1,5 +1,17 @@
 import numpy as np
 from koala.lattice import Lattice
+from koala.pointsets import move_all_points
+
+def iterative_move_point(points_in, sigma,  kappa, n_iterations=3, **kwargs):
+
+    sigma_step = sigma / np.sqrt(n_iterations)
+    kappa_step = kappa / n_iterations
+
+    points = points_in.copy()
+    for _ in range(n_iterations):
+        points = move_all_points(points, sigma_step, kappa_step, **kwargs)
+
+    return points
 
 # same function as bonds_2D in laura's code
 def proximity_bonds(positions: np.ndarray, distance_threshold: float) -> tuple:

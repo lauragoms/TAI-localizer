@@ -11,6 +11,8 @@ from tai_localiser.lauralizer.localizer import (
 from koala import pointsets
 from koala.pointsets import grid
 
+from tai_localiser.perulizer.lattices import iterative_move_point
+
 
 def params_obs_3D(
     MJ: float,
@@ -36,11 +38,10 @@ def params_obs_3D(
         rng = np.random.default_rng(seed)
 
         # structural disorder
-        sites = pointsets.move_all_points(
+        sites = iterative_move_point(
             init_points,
             sigma,
             kappa_shift,
-            beta,
             resolution=resolution,
             rng=rng,
             )

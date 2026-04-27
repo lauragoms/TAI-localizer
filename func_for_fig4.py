@@ -14,7 +14,7 @@ from tai_localiser.perulizer import (
     bhz_trs_operator,
     z2_spec_loc,
 )
-
+from tai_localiser.perulizer.lattices import iterative_move_point
 from tai_localiser.lauralizer.amorphous_model_BHZ_2D import amorph_BHZ
 from tai_localiser.lauralizer.localizer import (
     spectral_localizer_AII2D,
@@ -64,6 +64,8 @@ def param_obs_2d_benchmark_peru(
     return np.average(s_list)
 
 
+
+
 def param_obs_2b(
     system_size: int,
     sigma: float,
@@ -76,7 +78,7 @@ def param_obs_2b(
     hadamard_disorder: float = 0,
     kappa_spec=1,
     disorder_average=1,
-    beta=5,
+    beta=1,
     bond_power=1,
     bond_lengthscale=.1,
 ) -> tuple:
@@ -88,8 +90,8 @@ def param_obs_2b(
     # ptslists = []
     for j in range(disorder_average):
         rng = np.random.default_rng(int(j))
-        points = pointsets.move_all_points(
-            init_points, sigma, kappa_shift, beta, rng=rng
+        points = iterative_move_point(
+            init_points, sigma, kappa_shift, rng=rng
             )
 
         # make the lattice
