@@ -1,6 +1,6 @@
 # This file needs mumps 0.0.6 or later for comm variable to work
 import adaptive
-from func_for_fig4 import param_obs_2b
+from tai_localiser.lauralizer.func_for_fig4 import param_obs_2b
 from mpi4py.futures import MPIPoolExecutor
 from mpi4py import MPI
 

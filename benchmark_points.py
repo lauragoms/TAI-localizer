@@ -28,7 +28,7 @@ def _():
     import kwant as k
 
     # local imports
-    from func_for_fig4 import param_obs_2b
+    from tai_localiser.lauralizer.func_for_fig4 import param_obs_2b
 
 
     return (pointsets,)
