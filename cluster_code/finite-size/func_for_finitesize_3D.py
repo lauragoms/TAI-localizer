@@ -7,7 +7,7 @@ from tai_localiser.lauralizer.localizer import (
     spectral_localizer_AII3D,
     sign_det
     )
-from koala import pointsets
+from tai_localiser.perulizer.lattices import iterative_move_point
 
 
 def params_obs_3D(
@@ -30,8 +30,8 @@ def params_obs_3D(
 
     rng = np.random.default_rng(seed)
     # structural disorder
-    points = pointsets.move_all_points(
-        points, sigma, kappa_shift, beta, resolution=resolution, rng=rng
+    points = iterative_move_point(
+        points, sigma, kappa_shift, resolution=resolution, rng=rng
         )
 
     # create bonds

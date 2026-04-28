@@ -1,0 +1,23 @@
+#!/bin/bash
+#SBATCH -J 2Dfinitesize
+#SBATCH --partition=general
+#SBATCH --qos=long
+#SBATCH -t 2-00:00:00
+#SBATCH --array=0-49
+#SBATCH --mem=30G
+#SBATCH --mail-type=BEGIN,END
+#SBATCH --mail-user=laura.gomez-paz@neel.cnrs.fr
+#SBATCH -o output/%A.%a.out
+#SBATCH -e output/%A.%a.err
+
+mkdir -p output
+module purge
+module load Miniforge3
+source $(conda info --base)/etc/profile.d/conda.sh
+conda activate peru_env
+
+
+ARG_ARRAY=("$@")
+ID=${ARG_ARRAY[$SLURM_ARRAY_TASK_ID]}
+
+~/.conda/envs/peru_env/bin/python job_finite_size_scaling_2D.py "$ID"
