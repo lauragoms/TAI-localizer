@@ -21,7 +21,7 @@ parname = 'sigma'
 
 
 # lattice params
-system_size = 18
+system_size = 3
 num_realizations = 100
 sigma = sigma / system_size
 
@@ -38,7 +38,7 @@ kappa = 2
 E0 = 0
 
 # DISORDER
-kappa_shift = 3*bond_lengthscale
+kappa_shift = 0 #*bond_lengthscale
 beta = 1
 onsite_disorder = 0
 resolution = 10
