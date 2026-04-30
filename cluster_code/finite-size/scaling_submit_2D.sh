@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH -J 2Dfinitesize
 #SBATCH --partition=general
-#SBATCH --qos=regular
-#SBATCH -t 1-00:00:00
+#SBATCH --qos=long
+#SBATCH -t 2-00:00:00
 #SBATCH --array=0-49
-##SBATCH --mem=30G
+#SBATCH --mem=30G
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=laura.gomez-paz@neel.cnrs.fr
 #SBATCH -o output/%A.%a.out
