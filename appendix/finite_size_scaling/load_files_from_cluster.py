@@ -34,7 +34,6 @@ def load_cluster_results(results_dir, fname_pattern):
     par_values = []
     par_name = None
     data = {}
-    rest = []
     non_completed_runs = []
     for j, f in enumerate(files):
         with h5py.File(f, 'r') as hf:
@@ -54,9 +53,8 @@ def load_cluster_results(results_dir, fname_pattern):
                 # check if all realizations are present for the first parameter value
                 if i==0:
                     if len(grp[dataset_name]) != num_reals:
-                        rest.append(grp.attrs[par_name])
                         print(
-                            f"Warning: Parameter {grp.attrs[par_name]} removed, it has only {len(grp[dataset_name])} / {num_reals} realizations")
+                            f"Warning: Parameter {grp.attrs[par_name]*70} removed, it has only {len(grp[dataset_name])} / {num_reals} realizations")
                         non_completed_runs.append([j, grp.attrs[par_name]])
                 data[dataset_name].append(grp[dataset_name][:])
     # remove datasets with non completed runs
@@ -97,4 +95,4 @@ def load_cluster_results(results_dir, fname_pattern):
         print(f"  {elem}: {results['attrs'][elem]}")
     print("Outputs obtained from the calculation:", list(data.keys()))
 
-    return results, rest
+    return results
