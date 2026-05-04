@@ -26,7 +26,7 @@ kappa = 2
 E0 = 0
 
 # structural disorder params
-kappa_shift = 0.3
+kappa_shift = 3*bond_lengthscale
 beta = 1
 resolution = 10
 

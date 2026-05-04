@@ -24,7 +24,7 @@ kappa = 1
 
 # disorder for fig c)
 onsite_disorder_c = 0
-kappa_shift_c = 0.3
+kappa_shift_c = 3*bond_lengthscale
 beta = 1
 
 # adaptive params
