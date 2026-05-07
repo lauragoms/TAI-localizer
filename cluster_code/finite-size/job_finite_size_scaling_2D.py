@@ -52,7 +52,7 @@ fname = results_dir / f'results_{parname}{parallel_value}_num_reals_{disorder_av
 
 
 start_seed = 0
-
+z2 = []
 # ── resume from checkpoint if it exists ──────────────────────
 if fname.exists():
     with h5py.File(fname, 'r') as f:
@@ -91,7 +91,6 @@ signal.signal(signal.SIGTERM, handle_signal)
 signal.signal(signal.SIGINT,  handle_signal)
 
 # ── main loop ─────────────────────────────────────────────────
-z2 = []
 try:
     for seed in tqdm(range(start_seed, disorder_averages)):
 
