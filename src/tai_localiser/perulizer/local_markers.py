@@ -5,7 +5,7 @@ from scipy import linalg as la
 
 from matplotlib import pyplot as plt
 
-import pfapack.ctypes as cpf
+# import pfapack.ctypes as cpf
 from koala.lattice import Lattice
 
 sigma_x = np.array([[0, 1], [1, 0]])
