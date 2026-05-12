@@ -37,7 +37,7 @@ bond_lengthscale = 1 / system_size
 kappa = 1
 
 # DISORDER
-kappa_shift = 0 #3*bond_lengthscale
+kappa_shift = 3*bond_lengthscale
 beta = 1
 W = 0
 
