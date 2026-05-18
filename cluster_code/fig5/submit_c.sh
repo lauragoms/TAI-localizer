@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=bhz_c
+#SBATCH --job-name=3d_c
 #SBATCH --ntasks=50
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=10G

@@ -1,7 +1,6 @@
 import gc
 import numpy as np
 import scipy.sparse as sp
-from koala import pointsets
 from tai_localiser.perulizer import (
     proximity_bonds,
     randomly_rotate,
@@ -13,6 +12,7 @@ from tai_localiser.lauralizer.localizer import (
     spectral_localizer_AII2D,
     pfaff_sign,
 )
+from tai_localiser.perulizer.lattices import iterative_move_point
 
 
 def param_obs_2b(
@@ -48,8 +48,8 @@ def param_obs_2b(
     """
 
     rng = np.random.default_rng(int(seed))
-    points = pointsets.move_all_points(
-        points, sigma, kappa_shift, beta, rng=rng
+    points = iterative_move_point(
+        points, sigma, kappa_shift, rng=rng
     )
 
     # make the lattice

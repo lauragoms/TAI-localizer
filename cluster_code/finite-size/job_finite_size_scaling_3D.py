@@ -38,7 +38,7 @@ kappa = 2
 E0 = 0
 
 # DISORDER
-kappa_shift = 0 #3*bond_lengthscale
+kappa_shift = 0 #*bond_lengthscale
 beta = 1
 onsite_disorder = 0
 resolution = 10
@@ -53,6 +53,7 @@ fname = results_dir / f'results_{parname}{parallel_value}_num_reals_{num_realiza
 
 
 start_seed = 0
+z2 = []
 
 # ── resume from checkpoint if it exists ──────────────────────
 if fname.exists():
@@ -93,7 +94,6 @@ signal.signal(signal.SIGINT,  handle_signal)
 
 
 # ── main loop ─────────────────────────────────────────────────
-z2 = []
 try:
     for seed in tqdm(range(start_seed, num_realizations)):
         z2_seed = params_obs_3D(

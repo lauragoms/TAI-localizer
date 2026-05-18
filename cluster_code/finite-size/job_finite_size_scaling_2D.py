@@ -18,7 +18,7 @@ if len(sys.argv) > 1:
 sigma = parallel_value
 parname = 'sigma'
 # lattice parameters
-system_size = 3
+system_size = 70
 sigma = sigma / system_size  # adjust to system size
 bond_distance = 1.3 / system_size
 
@@ -37,7 +37,7 @@ bond_lengthscale = 1 / system_size
 kappa = 1
 
 # DISORDER
-kappa_shift = 0 #3*bond_lengthscale
+kappa_shift = 3*bond_lengthscale
 beta = 1
 W = 0
 
@@ -52,15 +52,15 @@ fname = results_dir / f'results_{parname}{parallel_value}_num_reals_{disorder_av
 
 
 start_seed = 0
-
+z2 = []
 # ── resume from checkpoint if it exists ──────────────────────
 if fname.exists():
     with h5py.File(fname, 'r') as f:
-        if f'{parname}_{parallel_value}' in f:
-            z2 = list(f[f'{parname}_{parallel_value}']['z2'][:]) # ADD LINES HERE FOR MORE EXPECTED OUTPUTS
+        if f'{parname}_{sigma}' in f:
+            z2 = list(f[f'{parname}_{sigma}']['z2'][:]) # ADD LINES HERE FOR MORE EXPECTED OUTPUTS
             start_seed = len(z2)
             print(
-                f"Resuming {parname}={parallel_value} from seed {start_seed}/{disorder_averages}")
+                f"Resuming {parname}={sigma} from seed {start_seed}/{disorder_averages}")
 
 
 def checkpoint(z2):  # ADD VARIABLES HERE FOR MORE EXPECTED OUTPUTS
@@ -91,7 +91,6 @@ signal.signal(signal.SIGTERM, handle_signal)
 signal.signal(signal.SIGINT,  handle_signal)
 
 # ── main loop ─────────────────────────────────────────────────
-z2 = []
 try:
     for seed in tqdm(range(start_seed, disorder_averages)):
 
