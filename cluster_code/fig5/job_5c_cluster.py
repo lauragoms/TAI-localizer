@@ -26,7 +26,7 @@ kappa = 2
 E0 = 0
 
 # structural disorder params
-kappa_shift = 3*bond_lengthscale
+kappa_shift = 9*bond_lengthscale
 beta = 1
 resolution = 10
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         bounds=[MJ_bounds, sigma_bounds],
     )
     learner_dis.load(fname)
-
+    print(learner_dis.npoints)
     runner_dis = adaptive.Runner(
         learner_dis,
         executor=MPIPoolExecutor(max_workers=comm.Get_size()-1),
