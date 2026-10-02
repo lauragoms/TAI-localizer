@@ -53,6 +53,12 @@ El atributo `sigma` está en unidades absolutas, igual que en los `.h5` antiguos
 load_cluster_results("results_2d_L20_..._R1.05_...", "sigma_*.h5")
 ```
 
+## Plot → `plot_z2_vs_sigma.ipynb`
+Copia las carpetas `results_*` del cluster dentro de `01_...` y `02_...`. El notebook carga cada R y W
+y comprueba en los atributos que L, R, W, Delta y kappa_shift son los esperados. Las corridas
+que falten las salta con un aviso. Plotea ⟨ν_2D⟩ ± error estándar frente a σ (r0): en el panel
+izquierdo los R y en el derecho los W, más la referencia R=1.3, W=0.
+
 ## Reproducibilidad / reanudación
 - **skip-if-done** y **resume**: el checkpoint se guarda después de cada realización, así que
   reenviar el mismo array es seguro.
