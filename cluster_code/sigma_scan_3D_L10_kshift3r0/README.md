@@ -54,8 +54,22 @@ par_variable_name`. Como en 2D, `sigma` está en unidades absolutas, así que
 Desde koala `7e95ea3` («better dimensional scaling to move points») la repulsión en d dimensiones es
 ∝ kappa / r^(d-1); antes era kappa / r. En 2D no cambia nada, pero en **3D las redes cambian**.
 Probado en local con koala `8a079f8`: no se reproducen semilla a semilla los `.h5` de
-`results_3d_v_3r0` (L10, σ ≈ 0.03 r0). Antes de lanzar, comprueba en el cluster qué versión usa
-`peru_env` (`pip show koala` / `git -C <ruta_koala> log -1`) y apúntala.
+`results_3d_v_3r0` (L10, σ ≈ 0.03 r0).
+
+El número de versión de koala no cambia entre commits, así que para saber cuál usa `peru_env` en el
+cluster está `check_koala.py`. Mira en el código instalado qué cambios tiene y calcula una huella
+numérica: mueve una red 4×4×4 con la semilla 0. Desde esta carpeta:
+```bash
+sbatch submit_check_koala.sh        # luego: cat check_koala.<jobid>.out
+```
+Referencia en local (koala `8a079f8`):
+```
+grid in any dimension (8736e2f): True
+repulsion kappa/r^(d-1) (7e95ea3): True
+original_points option (8a079f8): True
+fingerprint 3D: mean |disp| = 0.34669919 r0, first point = [0.15506944 0.16989625 0.06774101]
+```
+Si la huella del cluster coincide, las redes 3D son las mismas que en local.
 
 ## Reproducibilidad / reanudación
 - **skip-if-done** y **resume**: el checkpoint se guarda después de cada realización, así que
