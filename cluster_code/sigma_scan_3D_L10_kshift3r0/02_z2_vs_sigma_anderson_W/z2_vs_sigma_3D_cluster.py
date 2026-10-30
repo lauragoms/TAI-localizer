@@ -68,11 +68,12 @@ SYSTEM_PARAMS = {
 }
 
 # same model parameters as cluster_code/finite-size/job_finite_size_scaling_3D.py
+# (bond_power was r0 there and here until 2026-10-30; it must be 1)
 MODEL_PARAMS = {
     "A": 1.0,
     "MJ": args.MJ,
     "W": args.W,
-    "bond_power": r0,
+    "bond_power": 1,  # dimensionless, as in 2D and fig5
     "bond_lengthscale": r0,
 }
 

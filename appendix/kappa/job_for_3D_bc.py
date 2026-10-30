@@ -33,7 +33,7 @@ bond_distance = 1.3 / system_size
 A = 1
 
 bond_lengthscale = 1 / system_size
-bond_power = 1 / system_size
+bond_power = 1  # dimensionless: hopping = exp(-bond_power (rho - r0) / r0)
 
 # localizer params
 kappa = 7

@@ -1,6 +1,7 @@
 from koala import pointsets
 from tqdm import tqdm
 from save_files_in_cluster import save_checkpoint
+import os
 import sys
 from sys import exit as sys_exit
 import h5py
@@ -21,7 +22,10 @@ parname = 'sigma'
 
 
 # lattice params
-system_size = 3
+# L and the repulsion (in units of r0) can be set from the environment, e.g.
+#   sbatch --export=ALL,L=10,KSHIFT_R0=3 scaling_submit_3D.sh <sigmas>
+system_size = int(os.environ.get('L', 3))
+kshift_r0 = float(os.environ.get('KSHIFT_R0', 0))
 num_realizations = 100
 sigma = sigma / system_size
 
@@ -32,13 +36,13 @@ initial_points = pointsets.grid(system_size, system_size, system_size)
 A = 1
 MJ = 2
 bond_lengthscale = 1 / system_size
-bond_power = 1 / system_size
+bond_power = 1  # dimensionless: hopping = exp(-bond_power (rho - r0) / r0)
 # localizer params
 kappa = 2
 E0 = 0
 
 # DISORDER
-kappa_shift = 0 #*bond_lengthscale
+kappa_shift = kshift_r0 * bond_lengthscale
 beta = 1
 onsite_disorder = 0
 resolution = 10
@@ -46,7 +50,8 @@ resolution = 10
 
 # ── output folder and checkpoint config ──────────────────────
 SAVE_EVERY = 1
-results_dir = Path(f'results_3d_v_{kappa_shift}')
+# same folder names as appendix/finite_size_scaling: results_3d_v_0, results_3d_v_3r0
+results_dir = Path(f'results_3d_v_{kshift_r0:g}r0' if kshift_r0 else 'results_3d_v_0')
 results_dir.mkdir(exist_ok=True)
 
 fname = results_dir / f'results_{parname}{parallel_value}_num_reals_{num_realizations}_L{system_size}.h5'

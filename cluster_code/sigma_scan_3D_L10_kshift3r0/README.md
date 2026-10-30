@@ -20,7 +20,7 @@ La física es la misma que la de `cluster_code/finite-size/job_finite_size_scali
 | `A` | 1.0 | |
 | `MJ` | 2 | mismo valor que el FSS 3D del apéndice |
 | `bond_lengthscale` | r0 | |
-| `bond_power` | r0 | igual que el FSS 3D (en 2D es 1): hopping ∝ exp(-(ρ - r0)), casi constante |
+| `bond_power` | **1** | adimensional, como en 2D y fig5: hopping ∝ exp(-(ρ - r0)/r0). Antes era r0 (=1/L) por error |
 | `kappa` (localizer) | 2 | E0 = 0 |
 | `num_reals` | 100 | la realización j usa `default_rng(j)` → mismas redes para todos los R, W |
 
